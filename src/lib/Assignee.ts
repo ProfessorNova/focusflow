@@ -1,5 +1,0 @@
-
-
-interface Assignee {
-    name: string;
-}

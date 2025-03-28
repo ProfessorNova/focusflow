@@ -1,8 +1,7 @@
-import {getUserRecoverCode} from "$lib/server/auth/user";
+import {getUserRecoverCode, resetUserRecoveryCode} from "$lib/server/auth/user";
 import {redirect} from "@sveltejs/kit";
 
 import type {RequestEvent} from "./$types";
-import {resetRecoveryCode} from "$lib/server/auth/2fa";
 
 export async function load(event: RequestEvent) {
     if (event.locals.session === null || event.locals.user === null) {
@@ -17,7 +16,7 @@ export async function load(event: RequestEvent) {
     if (!event.locals.session.twoFactorVerified) {
         return redirect(302, "/2fa");
     }
-    await resetRecoveryCode(event.locals.user.id);
+    await resetUserRecoveryCode(event.locals.user.id);
     const recoveryCode = await getUserRecoverCode(event.locals.user.id);
     return {
         recoveryCode

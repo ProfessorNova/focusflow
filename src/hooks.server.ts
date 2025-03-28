@@ -3,6 +3,7 @@ import {deleteSessionTokenCookie, setSessionTokenCookie, validateSessionToken} f
 import {sequence} from "@sveltejs/kit/hooks";
 
 import type {Handle} from "@sveltejs/kit";
+import {setLastLogin} from "$lib/server/auth/user";
 
 const bucket = new RefillingTokenBucket<string>(100, 1);
 
@@ -48,6 +49,9 @@ const authHandle: Handle = async ({event, resolve}) => {
 
     event.locals.session = session;
     event.locals.user = user;
+
+    await setLastLogin(user.id);
+
     return resolve(event);
 };
 
