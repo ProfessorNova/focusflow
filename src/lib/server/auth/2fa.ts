@@ -50,3 +50,17 @@ export async function resetUser2FAWithRecoveryCode(userId: number, recoveryCode:
     });
     return result !== null;
 }
+
+export async function resetRecoveryCode(userId: number): Promise<boolean> {
+    const newRecoveryCode = generateRandomRecoveryCode();
+    const encryptedNewRecoveryCode = encryptString(newRecoveryCode);
+    const result = await prisma.user.update({
+        where: {
+            id: userId
+        },
+        data: {
+            recoveryCode: encryptedNewRecoveryCode
+        }
+    });
+    return result !== null;
+}

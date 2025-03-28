@@ -11,7 +11,9 @@ import {getUserPasswordHash, getUserRecoverCode, updateUserPassword} from "$lib/
 import type {SessionFlags} from "$lib/server/auth/session";
 import {
     createSession,
+    deleteSessionTokenCookie,
     generateSessionToken,
+    invalidateSession,
     invalidateUserSessions,
     setSessionTokenCookie
 } from "$lib/server/auth/session";
@@ -40,7 +42,8 @@ export async function load(event: RequestEvent) {
 
 export const actions: Actions = {
     password: updatePasswordAction,
-    email: updateEmailAction
+    email: updateEmailAction,
+    logout: logout,
 };
 
 async function updatePasswordAction(event: RequestEvent) {
@@ -184,4 +187,15 @@ async function updateEmailAction(event: RequestEvent) {
     sendVerificationEmail(verificationRequest.email, verificationRequest.code);
     setEmailVerificationRequestCookie(event, verificationRequest);
     return redirect(302, "/verify-email");
+}
+
+async function logout(event: RequestEvent) {
+    if (event.locals.session === null) {
+        return fail(401, {
+            message: "Not authenticated"
+        });
+    }
+    await invalidateSession(event.locals.session.id);
+    deleteSessionTokenCookie(event);
+    return redirect(302, "/login");
 }

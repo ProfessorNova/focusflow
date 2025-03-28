@@ -27,4 +27,6 @@ A lightweight web-application to plan your schedule.
    ENCRYPTION_KEY="L9pmqRJnO1ZJSQ2svbHuBA=="
    ```
 3. Start the development server with `npm run dev`
-4. If you want to have a database running, you can use `docker-compose up db -d` to start a postgres database.
+4. To have a database running execute `npx prisma generate` to generate the intern sql commands
+5. Also migrate the tables with `npx prisma migrate dev`
+6. // If you want to have a database running, you can use `docker-compose up db -d` to start a postgres database.
