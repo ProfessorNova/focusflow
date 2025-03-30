@@ -3,6 +3,7 @@ import {hashPassword} from "./password";
 import {generateRandomRecoveryCode} from "./utils";
 import type {PrismaClient} from "@prisma/client";
 import {prismaClient} from "$lib/server/stores/prismaStore";
+import type {User} from "$lib/server/objects/user";
 
 export function verifyUsernameInput(username: string): boolean {
     return username.length > 3 && username.length < 32 && username.trim() === username;
@@ -159,10 +160,13 @@ export async function getUserFromEmail(email: string): Promise<User | null> {
     };
 }
 
-export interface User {
-    id: number;
-    email: string;
-    username: string;
-    emailVerified: boolean;
-    registered2FA: boolean;
+export async function setLastLogin(userId: number): Promise<void> {
+    await prisma.user.update({
+        where: {
+            id: userId
+        },
+        data: {
+            lastLogin: new Date()
+        }
+    });
 }

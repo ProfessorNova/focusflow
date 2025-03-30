@@ -13,20 +13,86 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TaskPriority {
+  Low
+  Mid
+  High
+}
+
+enum TaskStatus {
+  Open
+  Pending
+  InReview
+  Closed
+}
+
+enum Tag {
+  Bug
+  Feature
+  Improvement
+  Task
+  Documentation
+  Enhancement
+  Hotfix
+  Optimization
+  Research
+  Chore
+  Meeting
+  Admin
+  Finance
+  Personal
+  Health
+  Event
+}
+
 model User {
-  id            Int     @id @default(autoincrement())
-  email         String  @unique
+  id            Int       @id @default(autoincrement())
+  email         String    @unique
   username      String
   passwordHash  String
-  emailVerified Boolean @default(false)
+  emailVerified Boolean   @default(false)
   totpKey       Bytes?
   recoveryCode  Bytes
+  createdAt     DateTime  @default(now())
+  lastLogin     DateTime?
 
   sessions              Session[]
   emailVerificationReqs EmailVerificationRequest[]
   passwordResetSessions PasswordResetSession[]
 
+  teams       Team[]
+  teamsLeader Team[] @relation("TeamLeader")
+  tasks       Task[]
+
   @@index([email])
+}
+
+model Team {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+
+  teamLeaderId Int
+  teamLeader   User   @relation("TeamLeader", fields: [teamLeaderId], references: [id])
+  users        User[]
+  tasks        Task[]
+}
+
+model Task {
+  id          Int          @id @default(autoincrement())
+  title       String
+  teaser      String
+  description String
+  dueDate     DateTime
+  priority    TaskPriority
+  tags        Tag[]
+  status      TaskStatus
+
+  userId Int?
+  teamId Int?
+  user   User? @relation(fields: [userId], references: [id])
+  team   Team? @relation(fields: [teamId], references: [id])
 }
 
 model Session {
