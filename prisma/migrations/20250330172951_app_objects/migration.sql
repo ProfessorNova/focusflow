@@ -2,9 +2,6 @@
 CREATE TYPE "TaskPriority" AS ENUM ('Low', 'Mid', 'High');
 
 -- CreateEnum
-CREATE TYPE "Assignee" AS ENUM ('User', 'Team');
-
--- CreateEnum
 CREATE TYPE "TaskStatus" AS ENUM ('Open', 'Pending', 'InReview', 'Closed');
 
 -- CreateEnum
@@ -33,7 +30,6 @@ CREATE TABLE "Task" (
     "description" TEXT NOT NULL,
     "dueDate" TIMESTAMP(3) NOT NULL,
     "priority" "TaskPriority" NOT NULL,
-    "assignee" "Assignee" NOT NULL,
     "tags" "Tag"[],
     "status" "TaskStatus" NOT NULL,
     "userId" INTEGER,

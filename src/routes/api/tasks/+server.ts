@@ -17,7 +17,6 @@ export const GET: RequestHandler = async ({url}) => {
 export const POST: RequestHandler = async ({request}) => {
     const {
         title,
-        assignee,
         userId,
         teamId,
         teaser,
@@ -27,20 +26,8 @@ export const POST: RequestHandler = async ({request}) => {
         tags,
         status
     } = await request.json();
-    console.log("POST request received with data:", {
-        title,
-        assignee,
-        userId,
-        teamId,
-        teaser,
-        description,
-        dueDate,
-        priority,
-        tags,
-        status
-    });
     try {
-        const task = await createTask(title, assignee, userId, teamId, teaser, description, dueDate, priority, tags, status);
+        const task = await createTask(title, userId, teamId, teaser, description, dueDate, priority, tags, status);
         return json(task);
     } catch (error) {
         return new Response(JSON.stringify({error: 'Internal server error'}), {status: 500});

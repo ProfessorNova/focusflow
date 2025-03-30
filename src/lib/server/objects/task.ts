@@ -1,4 +1,4 @@
-import type {Assignee, PrismaClient, Tag, TaskPriority, TaskStatus} from "@prisma/client";
+import type {PrismaClient, Tag, TaskPriority, TaskStatus} from "@prisma/client";
 import {prismaClient} from "$lib/server/stores/prismaStore";
 
 let prisma: PrismaClient;
@@ -9,7 +9,6 @@ prismaClient.subscribe((value) => {
 export async function getTasksByUserId(userId: number): Promise<Task[]> {
     return prisma.task.findMany({
         where: {
-            assignee: "User",
             userId: userId
         }
     });
@@ -18,7 +17,6 @@ export async function getTasksByUserId(userId: number): Promise<Task[]> {
 export async function getTasksByTeamId(teamId: number): Promise<Task[]> {
     return prisma.task.findMany({
         where: {
-            assignee: "Team",
             teamId: teamId
         }
     });
@@ -26,7 +24,6 @@ export async function getTasksByTeamId(teamId: number): Promise<Task[]> {
 
 export async function createTask(
     title: string,
-    assignee: Assignee,
     userId?: number,
     teamId?: number,
     teaser: string = "No teaser",
@@ -36,18 +33,6 @@ export async function createTask(
     tags: Tag[] = [],
     status: TaskStatus = "Open"
 ): Promise<Task> {
-    if (assignee === "User") {
-        if (userId === undefined) {
-            throw new Error("User ID is required for User assignee");
-        }
-    } else if (assignee === "Team") {
-        if (teamId === undefined) {
-            throw new Error("Team ID is required for Team assignee");
-        }
-    } else {
-        throw new Error("Invalid assignee type");
-    }
-
     return prisma.task.create({
         data: {
             title,
@@ -55,7 +40,6 @@ export async function createTask(
             description,
             dueDate,
             priority,
-            assignee,
             tags,
             status,
             userId,
