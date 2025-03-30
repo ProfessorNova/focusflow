@@ -19,11 +19,6 @@ enum TaskPriority {
   High
 }
 
-enum Assignee {
-  User
-  Team
-}
-
 enum TaskStatus {
   Open
   Pending
@@ -91,7 +86,6 @@ model Task {
   description String
   dueDate     DateTime
   priority    TaskPriority
-  assignee    Assignee
   tags        Tag[]
   status      TaskStatus
 
