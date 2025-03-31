@@ -69,3 +69,27 @@ Tests are implemented for following functions:
 - `getTeamMembers`
 - `getAllTeams`
 - `deleteTeam`
+
+## Tets for User
+
+As to not repeat trivial procedures again this part will be kept shorter. 
+Tests for the `user` object are also implemented in the same way as tests for
+`team` and `task`.
+
+Some of the functions of the `user` object actually contain some of their own logic
+which is why those functions also needed to be mocked in some of the tests.
+
+Some functions also received multiple tests for testing with valid and invalid data to ensure the function reacts accordingly.
+
+Tests are implemented for following functions:
+- `createUser`
+- `updateUserPassword`
+- `updateUserEmailAndSetEmailAsVerified`
+- `setUserAsEmailVerifiedIfEmailMatches`
+- `getUserPasswordHash`
+- `getUserRecoverCode`
+- `getUserTOTPKey`
+- `updateUserTOTPKey`
+- `resetUserRecoveryCode`
+- `getUserFromEmail`
+- `setLastLogin`

@@ -180,7 +180,6 @@ it('throws if user is not found when getting TOTP key', async () => {
 });
   
 it('encrypts and updates the TOTP key for the user', async () => {
-    const encrypted = 'encrypted-key';
     const key = new Uint8Array([1, 2, 3]);
   
     vi.spyOn(encryptModule, 'encrypt').mockReturnValue(key);
