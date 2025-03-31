@@ -143,7 +143,7 @@ it('returns all teams', async () => {
     ];
     __mockPrisma.team.findMany.mockResolvedValue(mockTeams);
 
-    const result = await teamModule.getAllTeams(5);
+    const result = await teamModule.getAllTeams();
     expect(__mockPrisma.team.findMany).toHaveBeenCalled();
     expect(result).toEqual(mockTeams);
 });
