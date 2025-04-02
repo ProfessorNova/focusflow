@@ -70,7 +70,7 @@ Tests are implemented for following functions:
 - `getAllTeams`
 - `deleteTeam`
 
-## Tets for User
+## Tests for User
 
 As to not repeat trivial procedures again this part will be kept shorter. 
 Tests for the `user` object are also implemented in the same way as tests for
@@ -78,6 +78,20 @@ Tests for the `user` object are also implemented in the same way as tests for
 
 Some of the functions of the `user` object actually contain some of their own logic
 which is why those functions also needed to be mocked in some of the tests.
+
+For example:
+``` it('updates the user password', async () => {
+    vi.spyOn(authUtils, 'hashPassword').mockResolvedValue('hashed_pw');
+  
+    await userModule.updateUserPassword(1, 'newpassword');
+  
+    expect(__mockPrisma.user.update).toHaveBeenCalledWith({
+      where: { id: 1 },
+      data: { passwordHash: 'hashed_pw' }
+    });
+});
+```
+The function `updateUserPassword()` uses the function `hashPassword()`. In the test we mock the `hashPassword()` function and tell it what it will have to return. In this case it will return "hashed_pw". 
 
 Some functions also received multiple tests for testing with valid and invalid data to ensure the function reacts accordingly.
 
