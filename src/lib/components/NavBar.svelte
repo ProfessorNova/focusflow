@@ -36,7 +36,7 @@
     <div class="navbar-center">
         <a href="{`${ResetLocation[1]}`}" title="{`${ResetLocation[0]}`}" class="btn btn-ghost text-xl text-primary">FocusFlow</a>
     </div>
-    <div class="navbar-end">
+    <div class="navbar-end gap-2">
         <ThemeToggle/>
         <form method="post" action="?/logout" use:enhance={() => {
 				logoutCallback();

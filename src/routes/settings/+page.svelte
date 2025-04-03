@@ -24,8 +24,8 @@
 <Navbar/>
 <NavSectionDisplay/>
 
-<main class="container mx-auto p-6 space-y-6">
-    <h1 class="text-3xl font-bold mb-6">Settings</h1>
+<main id="SettingsContainer" class="container mx-auto p-6 space-y-6 animation">
+    <!-- <h1 class="text-3xl font-bold mb-6">Settings</h1> -->
 
     <!-- Update Email Section -->
     <section class="mb-6">
