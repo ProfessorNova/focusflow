@@ -1,48 +1,35 @@
 <script lang="ts">
     import {navigationSections, navSection} from "$lib/store/navSectionStore";
 
-    let previousSections: string[][] = [];
-    let nextSections: string[][] = [];
-    let section: string = "";
-
-    $: {
-        section = $navSection;
-        nextSections = [];
-        previousSections = [];
-        for (let i = 0; i < navigationSections.length; i++) {
-            if (navigationSections[i][0] == section) {
-                nextSections.push(navigationSections.slice(i + 1, navigationSections.length).map((_section) => _section[0]));
-                break;
-            }
-            previousSections.push(navigationSections[i]);
-        }
-    }
-
+    let y: number = 0;
 </script>
+<!-- Scroll handler -->
+<svelte:window bind:scrollY={y} />
 
-<!-- Make a arc below the header which indicates the current navigation -->
-<div class="flex gap-2 justify-center">
-
-    {#each previousSections as previousSection}
-        <p>{previousSection[0]}</p>
-    {/each}
-
-    <p class="underline">{section}</p>
-
-    {#each nextSections as nextSection}
-        <p>{nextSection[0]}</p>
+<div id="pageTop"></div>
+<!-- hover:opacity-100 opacity-25 -->
+<!-- Include those class properties here \/ to make the bar seethrough while not hovering -->
+<div class="{y < 60 ? 'relative' : 'fixed'} z-10 top-0 left-0 flex bg-neutral w-full h-auto py-2 justify-center items-center gap-2 transition-opacity duration-750">
+    {#each navigationSections as section}
+        {#if section[0] == $navSection}
+            <a href="#pageTop" aria-label="{`Jumps to the top`}" class="flex items-center">
+                <button class="btn btn-sm btn-info hover:btn-neutral hover:border hover:border-info duration-500">
+                    {section[0]}
+                </button>
+            </a>
+        {:else}
+            <a href="{`${section[1]}`}" aria-label="{`Link to ${section[0]}`}" class="flex items-center">
+                <button class="btn btn-sm hover:scale-105 transition">
+                    {section[0]}
+                </button>
+            </a>
+        {/if}
     {/each}
 </div>
 
-<!-- For later use -->
 
-<!--<svg width="400" height="150">-->
-<!--    <defs>-->
-<!--        <path id="arcPath" d="M50,100 A150,80 0 0,1 350,100"/>-->
-<!--    </defs>-->
-<!--    <text font-size="18" fill="black">-->
-<!--        <textPath href="#arcPath" startOffset="50%">-->
-<!--            {section} Navigation-->
-<!--        </textPath>-->
-<!--    </text>-->
-<!--</svg>-->
+
+
+
+
+<!-- pseudo elements on hover for drag and drop -->
