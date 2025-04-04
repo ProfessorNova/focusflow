@@ -1,9 +1,9 @@
-import type {PrismaClient} from "@prisma/client";
-import {prismaClient} from "$lib/server/stores/prismaStore";
+import type { PrismaClient } from "@prisma/client";
+import { prismaClient } from "$lib/server/stores/prismaStore";
 
 let prisma: PrismaClient;
 prismaClient.subscribe((value) => {
-    prisma = value;
+  prisma = value;
 });
 
 /**
@@ -17,14 +17,18 @@ prismaClient.subscribe((value) => {
  * @param {number} teamLeaderId - The unique identifier of the team leader.
  * @returns {Promise<Team>} A promise that resolves to the newly created team object.
  */
-export async function createTeam(name: string, description: string, teamLeaderId: number): Promise<Team> {
-    return prisma.team.create({
-        data: {
-            name: name,
-            description: description,
-            teamLeaderId: teamLeaderId
-        }
-    });
+export async function createTeam(
+  name: string,
+  description: string,
+  teamLeaderId: number,
+): Promise<Team> {
+  return prisma.team.create({
+    data: {
+      name: name,
+      description: description,
+      teamLeaderId: teamLeaderId,
+    },
+  });
 }
 
 /**
@@ -37,19 +41,22 @@ export async function createTeam(name: string, description: string, teamLeaderId
  * @param {number} userId - The unique identifier of the user to add.
  * @returns {Promise<Team>} A promise that resolves to the updated team object.
  */
-export async function addUserToTeam(teamId: number, userId: number): Promise<Team> {
-    return prisma.team.update({
-        where: {
-            id: teamId
+export async function addUserToTeam(
+  teamId: number,
+  userId: number,
+): Promise<Team> {
+  return prisma.team.update({
+    where: {
+      id: teamId,
+    },
+    data: {
+      users: {
+        connect: {
+          id: userId,
         },
-        data: {
-            users: {
-                connect: {
-                    id: userId
-                }
-            }
-        }
-    });
+      },
+    },
+  });
 }
 
 /**
@@ -62,19 +69,22 @@ export async function addUserToTeam(teamId: number, userId: number): Promise<Tea
  * @param {number} userId - The unique identifier of the user to remove.
  * @returns {Promise<Team>} A promise that resolves to the updated team object.
  */
-export async function removeUserFromTeam(teamId: number, userId: number): Promise<Team> {
-    return prisma.team.update({
-        where: {
-            id: teamId
+export async function removeUserFromTeam(
+  teamId: number,
+  userId: number,
+): Promise<Team> {
+  return prisma.team.update({
+    where: {
+      id: teamId,
+    },
+    data: {
+      users: {
+        disconnect: {
+          id: userId,
         },
-        data: {
-            users: {
-                disconnect: {
-                    id: userId
-                }
-            }
-        }
-    });
+      },
+    },
+  });
 }
 
 /**
@@ -87,16 +97,20 @@ export async function removeUserFromTeam(teamId: number, userId: number): Promis
  * @param {string} [description] - (Optional) The new description for the team.
  * @returns {Promise<Team>} A promise that resolves to the updated team object.
  */
-export async function updateTeam(teamId: number, name?: string, description?: string): Promise<Team> {
-    return prisma.team.update({
-        where: {
-            id: teamId
-        },
-        data: {
-            name: name,
-            description: description
-        }
-    });
+export async function updateTeam(
+  teamId: number,
+  name?: string,
+  description?: string,
+): Promise<Team> {
+  return prisma.team.update({
+    where: {
+      id: teamId,
+    },
+    data: {
+      name: name,
+      description: description,
+    },
+  });
 }
 
 /**
@@ -109,11 +123,11 @@ export async function updateTeam(teamId: number, name?: string, description?: st
  * @returns {Promise<Team | null>} A promise that resolves to the team object if found, or null.
  */
 export async function getTeamById(teamId: number): Promise<Team | null> {
-    return prisma.team.findUnique({
-        where: {
-            id: teamId
-        }
-    });
+  return prisma.team.findUnique({
+    where: {
+      id: teamId,
+    },
+  });
 }
 
 /**
@@ -126,14 +140,14 @@ export async function getTeamById(teamId: number): Promise<Team | null> {
  * @returns {Promise<Team | null>} A promise that resolves to the team object with members if found, or null.
  */
 export async function getTeamMembers(teamId: number): Promise<Team | null> {
-    return prisma.team.findUnique({
-        where: {
-            id: teamId,
-        },
-        include: {
-            users: true,
-        }
-    });
+  return prisma.team.findUnique({
+    where: {
+      id: teamId,
+    },
+    include: {
+      users: true,
+    },
+  });
 }
 
 /**
@@ -145,7 +159,7 @@ export async function getTeamMembers(teamId: number): Promise<Team | null> {
  * or null if no teams are found.
  */
 export async function getAllTeams(): Promise<Team[] | null> {
-    return prisma.team.findMany();
+  return prisma.team.findMany();
 }
 
 /**
@@ -157,11 +171,11 @@ export async function getAllTeams(): Promise<Team[] | null> {
  * @returns {Promise<Team>} A promise that resolves to the deleted team object.
  */
 export async function deleteTeam(teamId: number): Promise<Team> {
-    return prisma.team.delete({
-        where: {
-            id: teamId,
-        }
-    });
+  return prisma.team.delete({
+    where: {
+      id: teamId,
+    },
+  });
 }
 
 /**
@@ -174,8 +188,8 @@ export async function deleteTeam(teamId: number): Promise<Team> {
  * @property {Date} [createdAt] - (Optional) The date when the team was created.
  */
 export interface Team {
-    id: number;
-    name: string;
-    description: string;
-    createdAt?: Date;
+  id: number;
+  name: string;
+  description: string;
+  createdAt?: Date;
 }

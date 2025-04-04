@@ -1,4 +1,4 @@
-import {encodeBase32UpperCaseNoPadding} from "@oslojs/encoding";
+import { encodeBase32UpperCaseNoPadding } from "@oslojs/encoding";
 
 /**
  * Generates a random one-time password (OTP).
@@ -9,9 +9,9 @@ import {encodeBase32UpperCaseNoPadding} from "@oslojs/encoding";
  * @returns {string} A randomly generated OTP as a Base32 encoded string.
  */
 export function generateRandomOTP(): string {
-    const bytes = new Uint8Array(5);
-    crypto.getRandomValues(bytes);
-    return encodeBase32UpperCaseNoPadding(bytes);
+  const bytes = new Uint8Array(5);
+  crypto.getRandomValues(bytes);
+  return encodeBase32UpperCaseNoPadding(bytes);
 }
 
 /**
@@ -23,7 +23,7 @@ export function generateRandomOTP(): string {
  * @returns {string} A randomly generated recovery code as a Base32 encoded string.
  */
 export function generateRandomRecoveryCode(): string {
-    const recoveryCodeBytes = new Uint8Array(10);
-    crypto.getRandomValues(recoveryCodeBytes);
-    return encodeBase32UpperCaseNoPadding(recoveryCodeBytes);
+  const recoveryCodeBytes = new Uint8Array(10);
+  crypto.getRandomValues(recoveryCodeBytes);
+  return encodeBase32UpperCaseNoPadding(recoveryCodeBytes);
 }

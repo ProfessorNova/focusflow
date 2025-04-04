@@ -45,19 +45,19 @@ Relationships:
 model User {
   id                    Int                        @id @default(autoincrement())
   email                 String                     @unique
-  username              String                     
-  passwordHash          String                     
+  username              String
+  passwordHash          String
   emailVerified         Boolean                    @default(false)
-  totpKey               Bytes?                     
-  recoveryCode          Bytes                      
+  totpKey               Bytes?
+  recoveryCode          Bytes
   createdAt             DateTime                   @default(now())
-  lastLogin             DateTime?                  
-  sessions              Session[]                  
-  emailVerificationReqs EmailVerificationRequest[] 
-  passwordResetSessions PasswordResetSession[]     
-  teams                 Team[]                     
+  lastLogin             DateTime?
+  sessions              Session[]
+  emailVerificationReqs EmailVerificationRequest[]
+  passwordResetSessions PasswordResetSession[]
+  teams                 Team[]
   teamsLeader           Team[]                     @relation("TeamLeader")
-  tasks                 Task[]                     
+  tasks                 Task[]
 
   @@index([email])
 }
@@ -79,13 +79,13 @@ Relationships:
 ```prisma
 model Team {
   id           Int      @id @default(autoincrement())
-  name         String   
-  description  String   
+  name         String
+  description  String
   createdAt    DateTime @default(now())
-  teamLeaderId Int      
+  teamLeaderId Int
   teamLeader   User     @relation("TeamLeader", fields: [teamLeaderId], references: [id])
-  users        User[]   
-  tasks        Task[]   
+  users        User[]
+  tasks        Task[]
 }
 ```
 
@@ -105,15 +105,15 @@ Relationships:
 ```prisma
 model Task {
   id          Int          @id @default(autoincrement())
-  title       String       
-  teaser      String       
-  description String       
-  dueDate     DateTime     
-  priority    TaskPriority 
-  tags        Tag[]        
-  status      TaskStatus   
-  userId      Int?         
-  teamId      Int?         
+  title       String
+  teaser      String
+  description String
+  dueDate     DateTime
+  priority    TaskPriority
+  tags        Tag[]
+  status      TaskStatus
+  userId      Int?
+  teamId      Int?
   user        User?        @relation(fields: [userId], references: [id])
   team        Team?        @relation(fields: [teamId], references: [id])
 }
@@ -134,8 +134,8 @@ Relationships:
 ```prisma
 model Session {
   id                String   @id
-  userId            Int      
-  expiresAt         DateTime 
+  userId            Int
+  expiresAt         DateTime
   twoFactorVerified Boolean  @default(false)
   user              User     @relation(fields: [userId], references: [id])
 }
@@ -155,10 +155,10 @@ Relationships:
 ```prisma
 model EmailVerificationRequest {
   id        String   @id
-  userId    Int      
-  email     String   
-  code      String   
-  expiresAt DateTime 
+  userId    Int
+  email     String
+  code      String
+  expiresAt DateTime
   user      User     @relation(fields: [userId], references: [id])
 }
 ```
@@ -179,10 +179,10 @@ Relationships:
 ```prisma
 model PasswordResetSession {
   id                String   @id
-  userId            Int      
-  email             String   
-  code              String   
-  expiresAt         DateTime 
+  userId            Int
+  email             String
+  code              String
+  expiresAt         DateTime
   emailVerified     Boolean  @default(false)
   twoFactorVerified Boolean  @default(false)
   user              User     @relation(fields: [userId], references: [id])

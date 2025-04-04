@@ -1,14 +1,14 @@
-import {generateRandomOTP} from "./utils";
-import {ExpiringTokenBucket} from "./rate-limit";
-import {encodeBase32} from "@oslojs/encoding";
+import { generateRandomOTP } from "./utils";
+import { ExpiringTokenBucket } from "./rate-limit";
+import { encodeBase32 } from "@oslojs/encoding";
 
-import type {RequestEvent} from "@sveltejs/kit";
-import type {PrismaClient} from "@prisma/client";
-import {prismaClient} from "$lib/server/stores/prismaStore";
+import type { RequestEvent } from "@sveltejs/kit";
+import type { PrismaClient } from "@prisma/client";
+import { prismaClient } from "$lib/server/stores/prismaStore";
 
 let prisma: PrismaClient;
 prismaClient.subscribe((value) => {
-    prisma = value;
+  prisma = value;
 });
 
 /**
@@ -20,23 +20,26 @@ prismaClient.subscribe((value) => {
  * @param {string} id - The unique identifier of the email verification request.
  * @returns {Promise<EmailVerificationRequest | null>} A promise that resolves to the email verification request if found, or null otherwise.
  */
-export async function getUserEmailVerificationRequest(userId: number, id: string): Promise<EmailVerificationRequest | null> {
-    const row = await prisma.emailVerificationRequest.findFirst({
-        where: {
-            id,
-            userId
-        }
-    });
-    if (row === null) {
-        return row;
-    }
-    return {
-        id: row.id,
-        userId: row.userId,
-        code: row.code,
-        email: row.email,
-        expiresAt: row.expiresAt
-    };
+export async function getUserEmailVerificationRequest(
+  userId: number,
+  id: string,
+): Promise<EmailVerificationRequest | null> {
+  const row = await prisma.emailVerificationRequest.findFirst({
+    where: {
+      id,
+      userId,
+    },
+  });
+  if (row === null) {
+    return row;
+  }
+  return {
+    id: row.id,
+    userId: row.userId,
+    code: row.code,
+    email: row.email,
+    expiresAt: row.expiresAt,
+  };
 }
 
 /**
@@ -50,31 +53,34 @@ export async function getUserEmailVerificationRequest(userId: number, id: string
  * @param {string} email - The email address to verify.
  * @returns {Promise<EmailVerificationRequest>} A promise that resolves to the newly created email verification request.
  */
-export async function createEmailVerificationRequest(userId: number, email: string): Promise<EmailVerificationRequest> {
-    await deleteUserEmailVerificationRequest(userId);
-    const idBytes = new Uint8Array(20);
-    crypto.getRandomValues(idBytes);
-    const id = encodeBase32(idBytes).toLowerCase();
+export async function createEmailVerificationRequest(
+  userId: number,
+  email: string,
+): Promise<EmailVerificationRequest> {
+  await deleteUserEmailVerificationRequest(userId);
+  const idBytes = new Uint8Array(20);
+  crypto.getRandomValues(idBytes);
+  const id = encodeBase32(idBytes).toLowerCase();
 
-    const code = generateRandomOTP();
-    const expiresAt = new Date(Date.now() + 1000 * 60 * 10);
-    await prisma.emailVerificationRequest.create({
-        data: {
-            id,
-            userId,
-            code,
-            email,
-            expiresAt
-        }
-    });
+  const code = generateRandomOTP();
+  const expiresAt = new Date(Date.now() + 1000 * 60 * 10);
+  await prisma.emailVerificationRequest.create({
+    data: {
+      id,
+      userId,
+      code,
+      email,
+      expiresAt,
+    },
+  });
 
-    return {
-        id,
-        userId,
-        code,
-        email,
-        expiresAt
-    };
+  return {
+    id,
+    userId,
+    code,
+    email,
+    expiresAt,
+  };
 }
 
 /**
@@ -85,12 +91,14 @@ export async function createEmailVerificationRequest(userId: number, email: stri
  * @param {number} userId - The unique identifier of the user.
  * @returns {Promise<void>} A promise that resolves when the deletion is complete.
  */
-export async function deleteUserEmailVerificationRequest(userId: number): Promise<void> {
-    await prisma.emailVerificationRequest.deleteMany({
-        where: {
-            userId
-        }
-    });
+export async function deleteUserEmailVerificationRequest(
+  userId: number,
+): Promise<void> {
+  await prisma.emailVerificationRequest.deleteMany({
+    where: {
+      userId,
+    },
+  });
 }
 
 /**
@@ -104,7 +112,7 @@ export async function deleteUserEmailVerificationRequest(userId: number): Promis
  * @returns {void}
  */
 export function sendVerificationEmail(email: string, code: string): void {
-    console.log(`To ${email}: Your verification code is ${code}`);
+  console.log(`To ${email}: Your verification code is ${code}`);
 }
 
 /**
@@ -117,14 +125,17 @@ export function sendVerificationEmail(email: string, code: string): void {
  * @param {EmailVerificationRequest} request - The email verification request data.
  * @returns {void}
  */
-export function setEmailVerificationRequestCookie(event: RequestEvent, request: EmailVerificationRequest): void {
-    event.cookies.set("email_verification", request.id, {
-        httpOnly: true,
-        path: "/",
-        secure: import.meta.env.PROD,
-        sameSite: "lax",
-        expires: request.expiresAt
-    });
+export function setEmailVerificationRequestCookie(
+  event: RequestEvent,
+  request: EmailVerificationRequest,
+): void {
+  event.cookies.set("email_verification", request.id, {
+    httpOnly: true,
+    path: "/",
+    secure: import.meta.env.PROD,
+    sameSite: "lax",
+    expires: request.expiresAt,
+  });
 }
 
 /**
@@ -135,14 +146,16 @@ export function setEmailVerificationRequestCookie(event: RequestEvent, request: 
  * @param {RequestEvent} event - The request event object containing the cookies API.
  * @returns {void}
  */
-export function deleteEmailVerificationRequestCookie(event: RequestEvent): void {
-    event.cookies.set("email_verification", "", {
-        httpOnly: true,
-        path: "/",
-        secure: import.meta.env.PROD,
-        sameSite: "lax",
-        maxAge: 0
-    });
+export function deleteEmailVerificationRequestCookie(
+  event: RequestEvent,
+): void {
+  event.cookies.set("email_verification", "", {
+    httpOnly: true,
+    path: "/",
+    secure: import.meta.env.PROD,
+    sameSite: "lax",
+    maxAge: 0,
+  });
 }
 
 /**
@@ -155,19 +168,24 @@ export function deleteEmailVerificationRequestCookie(event: RequestEvent): void 
  * @param {RequestEvent} event - The request event object containing user and cookies information.
  * @returns {Promise<EmailVerificationRequest | null>} A promise that resolves to the email verification request if available, or null otherwise.
  */
-export async function getUserEmailVerificationRequestFromRequest(event: RequestEvent): Promise<EmailVerificationRequest | null> {
-    if (event.locals.user === null) {
-        return null;
-    }
-    const id = event.cookies.get("email_verification") ?? null;
-    if (id === null) {
-        return null;
-    }
-    const request = await getUserEmailVerificationRequest(event.locals.user.id, id);
-    if (request === null) {
-        deleteEmailVerificationRequestCookie(event);
-    }
-    return request;
+export async function getUserEmailVerificationRequestFromRequest(
+  event: RequestEvent,
+): Promise<EmailVerificationRequest | null> {
+  if (event.locals.user === null) {
+    return null;
+  }
+  const id = event.cookies.get("email_verification") ?? null;
+  if (id === null) {
+    return null;
+  }
+  const request = await getUserEmailVerificationRequest(
+    event.locals.user.id,
+    id,
+  );
+  if (request === null) {
+    deleteEmailVerificationRequestCookie(event);
+  }
+  return request;
 }
 
 /**
@@ -176,7 +194,10 @@ export async function getUserEmailVerificationRequestFromRequest(event: RequestE
  * This bucket limits the number of verification emails that can be sent within a 10-minute window.
  * It allows up to 3 tokens every 10 minutes.
  */
-export const sendVerificationEmailBucket = new ExpiringTokenBucket<number>(3, 60 * 10);
+export const sendVerificationEmailBucket = new ExpiringTokenBucket<number>(
+  3,
+  60 * 10,
+);
 
 /**
  * Represents an email verification request.
@@ -189,9 +210,9 @@ export const sendVerificationEmailBucket = new ExpiringTokenBucket<number>(3, 60
  * @property {Date} expiresAt - The expiration date and time of the verification request.
  */
 export interface EmailVerificationRequest {
-    id: string;
-    userId: number;
-    code: string;
-    email: string;
-    expiresAt: Date;
+  id: string;
+  userId: number;
+  code: string;
+  email: string;
+  expiresAt: Date;
 }

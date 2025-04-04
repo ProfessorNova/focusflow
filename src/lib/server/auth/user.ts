@@ -1,9 +1,9 @@
-import {decrypt, decryptToString, encrypt, encryptString} from "./encryption";
-import {hashPassword} from "./password";
-import {generateRandomRecoveryCode} from "./utils";
-import type {PrismaClient} from "@prisma/client";
-import {prismaClient} from "$lib/server/stores/prismaStore";
-import type {User} from "$lib/server/objects/user";
+import { decrypt, decryptToString, encrypt, encryptString } from "./encryption";
+import { hashPassword } from "./password";
+import { generateRandomRecoveryCode } from "./utils";
+import type { PrismaClient } from "@prisma/client";
+import { prismaClient } from "$lib/server/stores/prismaStore";
+import type { User } from "$lib/server/objects/user";
 
 /**
  * Validates the provided username input.
@@ -15,12 +15,14 @@ import type {User} from "$lib/server/objects/user";
  * @returns {boolean} True if the username is valid, false otherwise.
  */
 export function verifyUsernameInput(username: string): boolean {
-    return username.length > 3 && username.length < 32 && username.trim() === username;
+  return (
+    username.length > 3 && username.length < 32 && username.trim() === username
+  );
 }
 
 let prisma: PrismaClient;
 prismaClient.subscribe((value) => {
-    prisma = value;
+  prisma = value;
 });
 
 /**
@@ -35,28 +37,32 @@ prismaClient.subscribe((value) => {
  * @returns {Promise<User>} A promise that resolves to the newly created user object.
  * @throws {Error} Throws an error if the user creation fails unexpectedly.
  */
-export async function createUser(email: string, username: string, password: string): Promise<User> {
-    const passwordHash = await hashPassword(password);
-    const recoveryCode = generateRandomRecoveryCode();
-    const encryptedRecoveryCode = encryptString(recoveryCode);
-    const row = await prisma.user.create({
-        data: {
-            email: email,
-            username: username,
-            passwordHash: passwordHash,
-            recoveryCode: encryptedRecoveryCode
-        }
-    });
-    if (row === null) {
-        throw new Error("Unexpected error");
-    }
-    return {
-        id: row.id,
-        username,
-        email,
-        emailVerified: false,
-        registered2FA: false
-    };
+export async function createUser(
+  email: string,
+  username: string,
+  password: string,
+): Promise<User> {
+  const passwordHash = await hashPassword(password);
+  const recoveryCode = generateRandomRecoveryCode();
+  const encryptedRecoveryCode = encryptString(recoveryCode);
+  const row = await prisma.user.create({
+    data: {
+      email: email,
+      username: username,
+      passwordHash: passwordHash,
+      recoveryCode: encryptedRecoveryCode,
+    },
+  });
+  if (row === null) {
+    throw new Error("Unexpected error");
+  }
+  return {
+    id: row.id,
+    username,
+    email,
+    emailVerified: false,
+    registered2FA: false,
+  };
 }
 
 /**
@@ -68,16 +74,19 @@ export async function createUser(email: string, username: string, password: stri
  * @param {string} password - The new plain text password.
  * @returns {Promise<void>} A promise that resolves when the update is complete.
  */
-export async function updateUserPassword(userId: number, password: string): Promise<void> {
-    const passwordHash = await hashPassword(password);
-    await prisma.user.update({
-        where: {
-            id: userId
-        },
-        data: {
-            passwordHash
-        }
-    });
+export async function updateUserPassword(
+  userId: number,
+  password: string,
+): Promise<void> {
+  const passwordHash = await hashPassword(password);
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      passwordHash,
+    },
+  });
 }
 
 /**
@@ -89,16 +98,19 @@ export async function updateUserPassword(userId: number, password: string): Prom
  * @param {string} email - The new email address to be set.
  * @returns {Promise<void>} A promise that resolves when the update is complete.
  */
-export async function updateUserEmailAndSetEmailAsVerified(userId: number, email: string): Promise<void> {
-    await prisma.user.update({
-        where: {
-            id: userId
-        },
-        data: {
-            email,
-            emailVerified: true
-        }
-    });
+export async function updateUserEmailAndSetEmailAsVerified(
+  userId: number,
+  email: string,
+): Promise<void> {
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      email,
+      emailVerified: true,
+    },
+  });
 }
 
 /**
@@ -110,17 +122,20 @@ export async function updateUserEmailAndSetEmailAsVerified(userId: number, email
  * @param {string} email - The email address to match against the user's current email.
  * @returns {Promise<boolean>} A promise that resolves to true if the email was successfully verified, false otherwise.
  */
-export async function setUserAsEmailVerifiedIfEmailMatches(userId: number, email: string): Promise<boolean> {
-    const result = await prisma.user.update({
-        where: {
-            id: userId,
-            email
-        },
-        data: {
-            emailVerified: true
-        }
-    });
-    return result !== null;
+export async function setUserAsEmailVerifiedIfEmailMatches(
+  userId: number,
+  email: string,
+): Promise<boolean> {
+  const result = await prisma.user.update({
+    where: {
+      id: userId,
+      email,
+    },
+    data: {
+      emailVerified: true,
+    },
+  });
+  return result !== null;
 }
 
 /**
@@ -133,15 +148,15 @@ export async function setUserAsEmailVerifiedIfEmailMatches(userId: number, email
  * @throws {Error} Throws an error if the user ID is invalid or no user is found.
  */
 export async function getUserPasswordHash(userId: number): Promise<string> {
-    const row = await prisma.user.findUnique({
-        where: {
-            id: userId
-        }
-    });
-    if (row === null) {
-        throw new Error("Invalid user ID");
-    }
-    return row.passwordHash;
+  const row = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  if (row === null) {
+    throw new Error("Invalid user ID");
+  }
+  return row.passwordHash;
 }
 
 /**
@@ -155,15 +170,15 @@ export async function getUserPasswordHash(userId: number): Promise<string> {
  * @throws {Error} Throws an error if the user ID is invalid or no user is found.
  */
 export async function getUserRecoverCode(userId: number): Promise<string> {
-    const row = await prisma.user.findUnique({
-        where: {
-            id: userId
-        }
-    });
-    if (row === null) {
-        throw new Error("Invalid user ID");
-    }
-    return decryptToString(row.recoveryCode);
+  const row = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  if (row === null) {
+    throw new Error("Invalid user ID");
+  }
+  return decryptToString(row.recoveryCode);
 }
 
 /**
@@ -177,20 +192,22 @@ export async function getUserRecoverCode(userId: number): Promise<string> {
  * @returns {Promise<Uint8Array|null>} A promise that resolves to the decrypted TOTP key or null if not set.
  * @throws {Error} Throws an error if the user ID is invalid or no user is found.
  */
-export async function getUserTOTPKey(userId: number): Promise<Uint8Array | null> {
-    const row = await prisma.user.findUnique({
-        where: {
-            id: userId
-        }
-    });
-    if (row === null) {
-        throw new Error("Invalid user ID");
-    }
-    const encrypted = row.totpKey;
-    if (encrypted === null) {
-        return null;
-    }
-    return decrypt(encrypted);
+export async function getUserTOTPKey(
+  userId: number,
+): Promise<Uint8Array | null> {
+  const row = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  if (row === null) {
+    throw new Error("Invalid user ID");
+  }
+  const encrypted = row.totpKey;
+  if (encrypted === null) {
+    return null;
+  }
+  return decrypt(encrypted);
 }
 
 /**
@@ -202,16 +219,19 @@ export async function getUserTOTPKey(userId: number): Promise<Uint8Array | null>
  * @param {Uint8Array} key - The new TOTP key to be encrypted and stored.
  * @returns {Promise<void>} A promise that resolves when the update is complete.
  */
-export async function updateUserTOTPKey(userId: number, key: Uint8Array): Promise<void> {
-    const encrypted = encrypt(key);
-    await prisma.user.update({
-        where: {
-            id: userId
-        },
-        data: {
-            totpKey: encrypted
-        }
-    });
+export async function updateUserTOTPKey(
+  userId: number,
+  key: Uint8Array,
+): Promise<void> {
+  const encrypted = encrypt(key);
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      totpKey: encrypted,
+    },
+  });
 }
 
 /**
@@ -224,17 +244,17 @@ export async function updateUserTOTPKey(userId: number, key: Uint8Array): Promis
  * @returns {Promise<string>} A promise that resolves to the new plain text recovery code.
  */
 export async function resetUserRecoveryCode(userId: number): Promise<string> {
-    const recoveryCode = generateRandomRecoveryCode();
-    const encrypted = encryptString(recoveryCode);
-    await prisma.user.update({
-        where: {
-            id: userId
-        },
-        data: {
-            recoveryCode: encrypted
-        }
-    });
-    return recoveryCode;
+  const recoveryCode = generateRandomRecoveryCode();
+  const encrypted = encryptString(recoveryCode);
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      recoveryCode: encrypted,
+    },
+  });
+  return recoveryCode;
 }
 
 /**
@@ -247,21 +267,21 @@ export async function resetUserRecoveryCode(userId: number): Promise<string> {
  * @returns {Promise<User|null>} A promise that resolves to a user object or null if no user is found.
  */
 export async function getUserFromEmail(email: string): Promise<User | null> {
-    const row = await prisma.user.findUnique({
-        where: {
-            email
-        }
-    });
-    if (row === null) {
-        return null;
-    }
-    return {
-        id: row.id,
-        email: row.email,
-        username: row.username,
-        emailVerified: row.emailVerified,
-        registered2FA: row.totpKey !== null
-    };
+  const row = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  if (row === null) {
+    return null;
+  }
+  return {
+    id: row.id,
+    email: row.email,
+    username: row.username,
+    emailVerified: row.emailVerified,
+    registered2FA: row.totpKey !== null,
+  };
 }
 
 /**
@@ -273,12 +293,12 @@ export async function getUserFromEmail(email: string): Promise<User | null> {
  * @returns {Promise<void>} A promise that resolves when the update is complete.
  */
 export async function setLastLogin(userId: number): Promise<void> {
-    await prisma.user.update({
-        where: {
-            id: userId
-        },
-        data: {
-            lastLogin: new Date()
-        }
-    });
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      lastLogin: new Date(),
+    },
+  });
 }

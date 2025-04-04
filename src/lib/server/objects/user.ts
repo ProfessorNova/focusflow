@@ -11,11 +11,11 @@
  * @property {Date} [lastLogin] - The date and time of the user's last login.
  */
 export interface User {
-    id: number;
-    email: string;
-    username: string;
-    emailVerified: boolean;
-    registered2FA: boolean;
-    createdAt?: Date;
-    lastLogin?: Date;
+  id: number;
+  email: string;
+  username: string;
+  emailVerified: boolean;
+  registered2FA: boolean;
+  createdAt?: Date;
+  lastLogin?: Date;
 }

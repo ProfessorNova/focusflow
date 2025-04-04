@@ -1,11 +1,15 @@
-import type {PrismaClient, Tag, TaskPriority, TaskStatus} from "@prisma/client";
-import {prismaClient} from "$lib/server/stores/prismaStore";
+import type {
+  PrismaClient,
+  Tag,
+  TaskPriority,
+  TaskStatus,
+} from "@prisma/client";
+import { prismaClient } from "$lib/server/stores/prismaStore";
 
 let prisma: PrismaClient;
 prismaClient.subscribe((value) => {
-    prisma = value;
+  prisma = value;
 });
-
 
 /**
  * Creates a new task in the database.
@@ -135,11 +139,11 @@ export async function updateTask(taskId: number, data: Partial<Task>): Promise<T
  * @returns {Promise<Task>} A promise that resolves to the deleted Task object.
  */
 export async function deleteTask(taskId: number): Promise<Task> {
-    return prisma.task.delete({
-        where: {
-            id: taskId,
-        }
-    });
+  return prisma.task.delete({
+    where: {
+      id: taskId,
+    },
+  });
 }
 
 

@@ -5,7 +5,7 @@
     const JUMPLIMIT: number = 55;
 </script>
 <!-- Scroll handler -->
-<svelte:window bind:scrollY={y} />
+<svelte:window bind:scrollY={y}/>
 
 <div id="pageTop"></div>
 <!-- hover:opacity-100 opacity-25 -->
@@ -47,10 +47,5 @@
         {/each}
     </div>
 {/if}
-
-
-
-
-
 
 <!-- pseudo elements on hover for drag and drop -->
