@@ -32,6 +32,7 @@ CREATE TABLE "Task" (
     "priority" "TaskPriority" NOT NULL,
     "tags" "Tag"[],
     "status" "TaskStatus" NOT NULL,
+    "changed" BOOLEAN NOT NULL,
     "userId" INTEGER,
     "teamId" INTEGER,
 
