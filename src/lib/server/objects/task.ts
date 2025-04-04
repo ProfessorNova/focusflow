@@ -33,7 +33,8 @@ export async function createTask(
     dueDate: Date = new Date(new Date().setHours(23, 59, 59, 999)),
     priority: TaskPriority = "Low",
     tags: Tag[] = [],
-    status: TaskStatus = "Open"
+    status: TaskStatus = "Open",
+    changed: boolean = false,
 ): Promise<Task> {
     return prisma.task.create({
         data: {
@@ -44,6 +45,7 @@ export async function createTask(
             priority,
             tags,
             status,
+            changed,
             userId,
             teamId,
         }
@@ -164,4 +166,5 @@ export interface Task {
     priority: TaskPriority;
     tags: Tag[];
     status: TaskStatus;
+    changed: boolean;
 }

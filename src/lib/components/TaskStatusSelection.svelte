@@ -2,9 +2,12 @@
     import {onMount} from "svelte";
     import {Circle, CircleCheck, CircleDot, Target} from "lucide-svelte";
 
-    export let taskId: number;
+    let { statusChanged = $bindable(), ...props} = $props();
 
-    let status: string = '';
+    const CHANGED: boolean = true;
+    let taskId: number = props.taskId;
+    let status: string = $state("");
+    let oldStatus: string = $state("");
 
     onMount(() => {
         (async () => {
@@ -12,28 +15,39 @@
                 const res = await fetch(`/api/tasks/${taskId}`);
                 const task = await res.json();
                 status = task.status;
+                oldStatus = status;
             } catch (err) {
                 console.error("Failed to load task.");
             }
         })();
     });
 
-    async function updateTask(): Promise<void> {
+    async function updateTask(hasChanges: boolean = true): Promise<void> {
         try {
+            let changed: boolean = hasChanges ? CHANGED : !CHANGED;
             const res = await fetch(`/api/tasks/${taskId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ status })
+                body: JSON.stringify({ status, changed })
             });
             if (res.ok) {
                 // Optionally, you can handle the response here
+                if(oldStatus != status){
+                    statusChanged = changed;
+                    oldStatus = status;
+                }
             } else {
                 console.error("Failed to update task.");
             }
         } catch (err) {
             console.error("Failed to update task:", err);
+        }
+        if(statusChanged == CHANGED) {
+            setTimeout(() => {
+                updateTask(false);
+            }, 500);
         }
     }
 </script>
@@ -50,10 +64,10 @@
             <CircleCheck class="text-success" />
         {/if}
     </div>
-    <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-        <li><button type="button" on:click={() => { status = "Open"; updateTask();}}>Open</button></li>
-        <li><button type="button" on:click={() => { status = "Pending"; updateTask();}}>Pending</button></li>
-        <li><button type="button" on:click={() => { status = "InReview"; updateTask();}}>InReview</button></li>
-        <li><button type="button" on:click={() => { status = "Closed"; updateTask();}}>Closed</button></li>
+    <ul id="TaskStatusList" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm {statusChanged ? "hidden" : ""}">
+        <li><button type="button" onclick={() => { status = "Open"; updateTask();}}>Open</button></li>
+        <li><button type="button" onclick={() => { status = "Pending"; updateTask();}}>Pending</button></li>
+        <li><button type="button" onclick={() => { status = "InReview"; updateTask();}}>InReview</button></li>
+        <li><button type="button" onclick={() => { status = "Closed"; updateTask();}}>Closed</button></li>
     </ul>
 </div>

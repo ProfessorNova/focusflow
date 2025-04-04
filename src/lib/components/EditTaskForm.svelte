@@ -1,33 +1,43 @@
 <script lang="ts">
     import {onMount} from "svelte";
     import {Save} from "lucide-svelte";
+    import TaskEditor from "./TaskEditor.svelte";
 
-    export let taskId: number;
+    let { updateSuccess = $bindable(false), ...props } = $props();
+    
+    let taskId: number = props.taskId;
+    $effect(() => {
+        if(props.checkSavings == true) {
+            // Handle event when modal closes
+            LoadTaskData();
+        }
+    })
 
-    let title: string = '';
-    let teaser: string = '';
-    let description: string = '';
-    let dueDate: string = '';
+    let title: string = $state("");
+    let teaser: string = $state("");
+    let description: string = $state("");
+    let dueDate: string = $state("");
+    let tags: string[] = $state([]);
 
-    let displaySuccess: boolean = false;
-
+    async function LoadTaskData() {
+        try {
+            const res = await fetch(`/api/tasks/${taskId}`);
+            const task = await res.json();
+            title = task.title;
+            teaser = task.teaser;
+            description = task.description;
+            tags = task.tags;
+            dueDate = task.dueDate
+                ? new Date(new Date(task.dueDate).getTime() - new Date(task.dueDate).getTimezoneOffset() * 60000)
+                    .toISOString().substring(0, 16)
+                : ''; // Format to 'YYYY-MM-DDTHH:MM' with correct timezone
+        } catch (err) {
+            console.error("Failed to load task.");
+        }
+    }
     // Load the task data on mount
     onMount(() => {
-        (async () => {
-            try {
-                const res = await fetch(`/api/tasks/${taskId}`);
-                const task = await res.json();
-                title = task.title;
-                teaser = task.teaser;
-                description = task.description;
-                dueDate = task.dueDate
-                    ? new Date(new Date(task.dueDate).getTime() - new Date(task.dueDate).getTimezoneOffset() * 60000)
-                        .toISOString().substring(0, 16)
-                    : ''; // Format to 'YYYY-MM-DDTHH:MM' with correct timezone
-            } catch (err) {
-                console.error("Failed to load task.");
-            }
-        })();
+        LoadTaskData();
     });
 
     // Update the task via PUT request
@@ -38,13 +48,13 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ title, teaser, description, dueDate })
+                body: JSON.stringify({ title, teaser, description, dueDate, tags })
             });
             if (res.ok) {
-                displaySuccess = true;
+                updateSuccess = true;
                 setTimeout(() => {
-                    displaySuccess = false;
-                }, 3000);
+                    updateSuccess = false;
+                }, 5000);
             } else {
                 console.error("Failed to update task.");
             }
@@ -55,43 +65,10 @@
 </script>
 
 <!-- Update Task Form -->
-<form on:submit|preventDefault={updateTask} class="container mx-auto">
+<form onsubmit={updateTask} class="container mx-auto">
     <div class="card md:card-side bg-base-100 shadow-xl">
         <div class="card-body">
-            <div class="form-control mb-4">
-                <input
-                        id="updateTaskTitle"
-                        type="text"
-                        bind:value={title}
-                        class="input input-ghost"
-                        required
-                />
-            </div>
-            <div class="form-control mb-4">
-                <input
-                        id="updateTaskTeaser"
-                        type="text"
-                        bind:value={teaser}
-                        class="input input-ghost"
-                        required
-                />
-            </div>
-            <div class="form-control mb-4">
-                <textarea
-                        id="updateTaskDescription"
-                        bind:value={description}
-                        class="input input-ghost"
-                        required
-                ></textarea>
-            </div>
-            <div class="form-control mb-4">
-                <input
-                        id="updateTaskDueDate"
-                        bind:value={dueDate}
-                        type="datetime-local"
-                        class="input input-ghost"
-                />
-            </div>
+            <TaskEditor bind:title={title} bind:teaser={teaser} bind:tags={tags} bind:description={description} bind:dueDate={dueDate}/>
             <div class="form-control flex justify-end">
                 <button type="submit" class="btn btn-primary">
                     <Save />
@@ -101,8 +78,3 @@
     </div>
 </form>
 
-{#if displaySuccess}
-    <div class="alert alert-success mt-4">
-        <span>Task updated successfully!</span>
-    </div>
-{/if}
