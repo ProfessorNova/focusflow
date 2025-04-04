@@ -36,6 +36,8 @@
         </Banner>
     {/if}
 
+    <h1 class="text-3xl font-bold text-center mt-8">Your tasks</h1>
+
     <div class="w-full flex flex-col items-center mt-8">
         <TaskList userId={data.user.id}/>
     </div>

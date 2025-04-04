@@ -1,10 +1,19 @@
 <script lang="ts">
     import {onMount} from "svelte";
     import {fly} from "svelte/transition";
-    import {AlignJustify, ListPlus, Pencil, Trash2} from "lucide-svelte";
+    import {ListPlus, Pencil, RefreshCcw, Trash2} from "lucide-svelte";
+    import Modal from "$lib/components/Modal.svelte";
+    import EditTaskForm from "$lib/components/EditTaskForm.svelte";
+    import TaskStatusSelection from "$lib/components/TaskStatusSelection.svelte";
+    import TaskDate from "$lib/components/TaskDate.svelte";
 
     export let userId: number;
-    let tasks: Array<{ id: number; title: string; teaser: string, description: string }> = [];
+    let tasks: Array<{
+        id: number,
+        title: string,
+        teaser: string,
+        description: string,
+    }> = [];
     let error: string | null = null;
 
     /**
@@ -74,6 +83,19 @@
             error = "Failed to delete task.";
         }
     }
+
+    /**
+     * Refreshes the task list by re-fetching from the server.
+     */
+    async function refreshTasks(): Promise<void> {
+        error = null;
+        try {
+            const res = await fetch(`/api/tasks?userId=${userId}`);
+            tasks = await res.json();
+        } catch (err) {
+            error = "Failed to refresh tasks.";
+        }
+    }
 </script>
 
 <div class="container mx-auto p-4">
@@ -92,15 +114,17 @@
             {#each tasks as task (task.id)}
                 <li class="list-row" transition:fly={{x: 50, duration: 300}}>
                     <div>
-                        <AlignJustify/>
+                        <TaskStatusSelection taskId={task.id} />
                     </div>
                     <div>
                         <div>{task.title}</div>
                         <div class="text-xs uppercase font-semibold opacity-60">{task.teaser}</div>
+                        <TaskDate taskId={task.id} />
                     </div>
-                    <button class="btn btn-square btn-ghost">
-                        <Pencil/>
-                    </button>
+                    <Modal>
+                        <Pencil slot="icon" />
+                        <EditTaskForm slot="content" taskId={task.id} />
+                    </Modal>
                     <button class="btn btn-square btn-ghost" on:click={() => deleteTask(task.id)}>
                         <Trash2/>
                     </button>
@@ -108,6 +132,14 @@
             {/each}
         </ul>
     {/if}
+
+
+    <!-- Button to refresh tasks -->
+    <div class="flex justify-end m-8">
+        <button class="btn btn-secondary btn-circle" on:click={refreshTasks}>
+            <RefreshCcw />
+        </button>
+    </div>
 
     <!-- Form for creating a new task -->
     <form class="mt-4 card bg-base-100 shadow-xl p-4"

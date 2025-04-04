@@ -6,37 +6,6 @@ prismaClient.subscribe((value) => {
     prisma = value;
 });
 
-/**
- * Retrieves all tasks associated with a specific user.
- *
- * This function queries the database for tasks that have the specified userId.
- *
- * @param {number} userId - The unique identifier of the user whose tasks are to be retrieved.
- * @returns {Promise<Task[]>} A promise that resolves to an array of Task objects.
- */
-export async function getTasksByUserId(userId: number): Promise<Task[]> {
-    return prisma.task.findMany({
-        where: {
-            userId: userId
-        }
-    });
-}
-
-/**
- * Retrieves all tasks associated with a specific team.
- *
- * This function queries the database for tasks that have the specified teamId.
- *
- * @param {number} teamId - The unique identifier of the team whose tasks are to be retrieved.
- * @returns {Promise<Task[]>} A promise that resolves to an array of Task objects.
- */
-export async function getTasksByTeamId(teamId: number): Promise<Task[]> {
-    return prisma.task.findMany({
-        where: {
-            teamId: teamId
-        }
-    });
-}
 
 /**
  * Creates a new task in the database.
@@ -82,6 +51,80 @@ export async function createTask(
 }
 
 /**
+ * Retrieves a task by its unique identifier.
+ *
+ * This function queries the database for a task that matches the provided taskId.
+ *
+ * @param {number} taskId - The unique identifier of the task to be retrieved.
+ * @returns {Promise<Task | null>} A promise that resolves to the Task object if found, or null if not found.
+ */
+export async function getTask(taskId: number): Promise<Task | null> {
+    return prisma.task.findUnique({
+        where: {
+            id: taskId
+        }
+    });
+}
+
+/**
+ * Retrieves all tasks associated with a specific user.
+ *
+ * This function queries the database for tasks that have the specified userId.
+ *
+ * @param {number} userId - The unique identifier of the user whose tasks are to be retrieved.
+ * @returns {Promise<Task[]>} A promise that resolves to an array of Task objects.
+ */
+export async function getTasksByUserId(userId: number): Promise<Task[]> {
+    return prisma.task.findMany({
+        where: {
+            userId: userId
+        },
+        orderBy: {
+            status: 'asc'
+        }
+    });
+}
+
+/**
+ * Retrieves all tasks associated with a specific team.
+ *
+ * This function queries the database for tasks that have the specified teamId.
+ *
+ * @param {number} teamId - The unique identifier of the team whose tasks are to be retrieved.
+ * @returns {Promise<Task[]>} A promise that resolves to an array of Task objects.
+ */
+export async function getTasksByTeamId(teamId: number): Promise<Task[]> {
+    return prisma.task.findMany({
+        where: {
+            teamId: teamId
+        },
+        orderBy: {
+            status: 'asc'
+        }
+    });
+}
+
+/**
+ * Updates an existing task in the database.
+ *
+ * This function updates the task record that matches the provided taskId with the new data.
+ *
+ * @param {number} taskId - The unique identifier of the task to be updated.
+ * @param {Partial<Task>} data - An object containing the fields to be updated.
+ * @returns {Promise<Task>} A promise that resolves to the updated Task object.
+ */
+export async function updateTask(taskId: number, data: Partial<Task>): Promise<Task> {
+    return prisma.task.update({
+        where: {
+            id: taskId
+        },
+        data: {
+            ...data
+        }
+    });
+}
+
+/**
  * Deletes a task from the database.
  *
  * This function deletes the task record that matches the provided taskId.
@@ -96,6 +139,8 @@ export async function deleteTask(taskId: number): Promise<Task> {
         }
     });
 }
+
+
 
 /**
  * Represents a task entity.
