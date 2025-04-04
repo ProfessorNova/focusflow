@@ -8,7 +8,7 @@ The helper methods for entity management are mainly separated into two groups:
 - **Methods for the application logic**: These methods are used to manage the application entities, such as creating a
   new task, team and so on. These methods will then be used to create the endpoints in the API.
 
-Only the User entity has methods inside the authentication *and* application logic. All the other entities have methods
+Only the User entity has methods inside the authentication _and_ application logic. All the other entities have methods
 either in the authentication or application logic.
 
 The methods are separated into different files based on the entity they are managing. For example, the methods for the

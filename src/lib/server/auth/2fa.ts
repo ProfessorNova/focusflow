@@ -1,12 +1,12 @@
-import {decryptToString, encryptString} from "./encryption";
-import {ExpiringTokenBucket} from "./rate-limit";
-import {generateRandomRecoveryCode} from "./utils";
-import type {PrismaClient} from "@prisma/client";
-import {prismaClient} from "$lib/server/stores/prismaStore";
+import { decryptToString, encryptString } from "./encryption";
+import { ExpiringTokenBucket } from "./rate-limit";
+import { generateRandomRecoveryCode } from "./utils";
+import type { PrismaClient } from "@prisma/client";
+import { prismaClient } from "$lib/server/stores/prismaStore";
 
 let prisma: PrismaClient;
 prismaClient.subscribe((value) => {
-    prisma = value;
+  prisma = value;
 });
 
 /**
@@ -35,47 +35,50 @@ export const recoveryCodeBucket = new ExpiringTokenBucket<number>(3, 60 * 60);
  * @param {string} recoveryCode - The recovery code provided by the user.
  * @returns {Promise<boolean>} A promise that resolves to true if the 2FA reset was successful, or false otherwise.
  */
-export async function resetUser2FAWithRecoveryCode(userId: number, recoveryCode: string): Promise<boolean> {
-    // Retrieve the user record by ID.
-    const row = await prisma.user.findUnique({
-        where: {
-            id: userId
-        }
-    });
-    if (row === null) {
-        return false;
-    }
-    // Decrypt the stored recovery code.
-    const encryptedRecoveryCode = row.recoveryCode;
-    const userRecoveryCode = decryptToString(encryptedRecoveryCode);
-    // Verify the provided recovery code matches the stored code.
-    if (recoveryCode !== userRecoveryCode) {
-        return false;
-    }
+export async function resetUser2FAWithRecoveryCode(
+  userId: number,
+  recoveryCode: string,
+): Promise<boolean> {
+  // Retrieve the user record by ID.
+  const row = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  if (row === null) {
+    return false;
+  }
+  // Decrypt the stored recovery code.
+  const encryptedRecoveryCode = row.recoveryCode;
+  const userRecoveryCode = decryptToString(encryptedRecoveryCode);
+  // Verify the provided recovery code matches the stored code.
+  if (recoveryCode !== userRecoveryCode) {
+    return false;
+  }
 
-    // Generate a new recovery code and encrypt it.
-    const newRecoveryCode = generateRandomRecoveryCode();
-    const encryptedNewRecoveryCode = encryptString(newRecoveryCode);
+  // Generate a new recovery code and encrypt it.
+  const newRecoveryCode = generateRandomRecoveryCode();
+  const encryptedNewRecoveryCode = encryptString(newRecoveryCode);
 
-    // Update all sessions for the user to mark two-factor authentication as unverified.
-    await prisma.session.updateMany({
-        where: {
-            userId
-        },
-        data: {
-            twoFactorVerified: false
-        }
-    });
+  // Update all sessions for the user to mark two-factor authentication as unverified.
+  await prisma.session.updateMany({
+    where: {
+      userId,
+    },
+    data: {
+      twoFactorVerified: false,
+    },
+  });
 
-    // Update the user's record to reset the recovery code and clear the TOTP key.
-    const result = await prisma.user.update({
-        where: {
-            id: userId
-        },
-        data: {
-            recoveryCode: encryptedNewRecoveryCode,
-            totpKey: null
-        }
-    });
-    return result !== null;
+  // Update the user's record to reset the recovery code and clear the TOTP key.
+  const result = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      recoveryCode: encryptedNewRecoveryCode,
+      totpKey: null,
+    },
+  });
+  return result !== null;
 }

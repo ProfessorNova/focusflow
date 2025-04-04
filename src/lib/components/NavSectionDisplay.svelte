@@ -4,7 +4,7 @@
     let y: number = 0;
 </script>
 <!-- Scroll handler -->
-<svelte:window bind:scrollY={y} />
+<svelte:window bind:scrollY={y}/>
 
 <div id="pageTop"></div>
 <!-- hover:opacity-100 opacity-25 -->
@@ -26,10 +26,5 @@
         {/if}
     {/each}
 </div>
-
-
-
-
-
 
 <!-- pseudo elements on hover for drag and drop -->

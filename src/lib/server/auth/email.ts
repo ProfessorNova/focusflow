@@ -1,9 +1,9 @@
-import type {PrismaClient} from "@prisma/client";
-import {prismaClient} from "$lib/server/stores/prismaStore";
+import type { PrismaClient } from "@prisma/client";
+import { prismaClient } from "$lib/server/stores/prismaStore";
 
 let prisma: PrismaClient;
 prismaClient.subscribe((value) => {
-    prisma = value;
+  prisma = value;
 });
 
 /**
@@ -16,7 +16,7 @@ prismaClient.subscribe((value) => {
  * @returns {boolean} Returns true if the email format is valid and within the allowed length; otherwise, returns false.
  */
 export function verifyEmailInput(email: string): boolean {
-    return /^.+@.+\..+$/.test(email) && email.length < 256;
+  return /^.+@.+\..+$/.test(email) && email.length < 256;
 }
 
 /**
@@ -30,13 +30,13 @@ export function verifyEmailInput(email: string): boolean {
  * @throws {Error} Throws an error if the database query returns a null result.
  */
 export async function checkEmailAvailability(email: string): Promise<boolean> {
-    const row = await prisma.user.count({
-        where: {
-            email
-        }
-    });
-    if (row === null) {
-        throw new Error();
-    }
-    return row === 0;
+  const row = await prisma.user.count({
+    where: {
+      email,
+    },
+  });
+  if (row === null) {
+    throw new Error();
+  }
+  return row === 0;
 }

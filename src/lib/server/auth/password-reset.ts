@@ -1,15 +1,15 @@
-import {encodeHexLowerCase} from "@oslojs/encoding";
-import {generateRandomOTP} from "./utils";
-import {sha256} from "@oslojs/crypto/sha2";
+import { encodeHexLowerCase } from "@oslojs/encoding";
+import { generateRandomOTP } from "./utils";
+import { sha256 } from "@oslojs/crypto/sha2";
 
-import type {RequestEvent} from "@sveltejs/kit";
-import type {User} from "$lib/server/objects/user";
-import type {PrismaClient} from "@prisma/client";
-import {prismaClient} from "$lib/server/stores/prismaStore";
+import type { RequestEvent } from "@sveltejs/kit";
+import type { User } from "$lib/server/objects/user";
+import type { PrismaClient } from "@prisma/client";
+import { prismaClient } from "$lib/server/stores/prismaStore";
 
 let prisma: PrismaClient;
 prismaClient.subscribe((value) => {
-    prisma = value;
+  prisma = value;
 });
 
 /**
@@ -25,27 +25,31 @@ prismaClient.subscribe((value) => {
  * @param {string} email - The user's email address.
  * @returns {Promise<PasswordResetSession>} A promise that resolves to the created password reset session.
  */
-export async function createPasswordResetSession(token: string, userId: number, email: string): Promise<PasswordResetSession> {
-    const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-    const session: PasswordResetSession = {
-        id: sessionId,
-        userId,
-        email,
-        expiresAt: new Date(Date.now() + 1000 * 60 * 10),
-        code: generateRandomOTP(),
-        emailVerified: false,
-        twoFactorVerified: false
-    };
-    await prisma.passwordResetSession.create({
-        data: {
-            id: session.id,
-            userId: session.userId,
-            email: session.email,
-            code: session.code,
-            expiresAt: session.expiresAt
-        }
-    });
-    return session;
+export async function createPasswordResetSession(
+  token: string,
+  userId: number,
+  email: string,
+): Promise<PasswordResetSession> {
+  const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+  const session: PasswordResetSession = {
+    id: sessionId,
+    userId,
+    email,
+    expiresAt: new Date(Date.now() + 1000 * 60 * 10),
+    code: generateRandomOTP(),
+    emailVerified: false,
+    twoFactorVerified: false,
+  };
+  await prisma.passwordResetSession.create({
+    data: {
+      id: session.id,
+      userId: session.userId,
+      email: session.email,
+      code: session.code,
+      expiresAt: session.expiresAt,
+    },
+  });
+  return session;
 }
 
 /**
@@ -60,59 +64,61 @@ export async function createPasswordResetSession(token: string, userId: number, 
  * @returns {Promise<PasswordResetSessionValidationResult>} A promise that resolves to an object
  * containing the session and user data, or null values if the session is invalid or expired.
  */
-export async function validatePasswordResetSessionToken(token: string): Promise<PasswordResetSessionValidationResult> {
-    const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-    const row = await prisma.passwordResetSession.findUnique({
-        where: {
-            id: sessionId
-        },
+export async function validatePasswordResetSessionToken(
+  token: string,
+): Promise<PasswordResetSessionValidationResult> {
+  const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+  const row = await prisma.passwordResetSession.findUnique({
+    where: {
+      id: sessionId,
+    },
+    select: {
+      id: true,
+      userId: true,
+      email: true,
+      code: true,
+      expiresAt: true,
+      emailVerified: true,
+      twoFactorVerified: true,
+      user: {
         select: {
-            id: true,
-            userId: true,
-            email: true,
-            code: true,
-            expiresAt: true,
-            emailVerified: true,
-            twoFactorVerified: true,
-            user: {
-                select: {
-                    id: true,
-                    email: true,
-                    username: true,
-                    emailVerified: true,
-                    totpKey: true
-                }
-            }
-        }
+          id: true,
+          email: true,
+          username: true,
+          emailVerified: true,
+          totpKey: true,
+        },
+      },
+    },
+  });
+  if (row === null) {
+    return { session: null, user: null };
+  }
+  const session: PasswordResetSession = {
+    id: row.id,
+    userId: row.userId,
+    email: row.email,
+    code: row.code,
+    expiresAt: row.expiresAt,
+    emailVerified: row.emailVerified,
+    twoFactorVerified: row.twoFactorVerified,
+  };
+  const user: User = {
+    id: row.user.id,
+    email: row.user.email,
+    username: row.user.username,
+    emailVerified: row.user.emailVerified,
+    registered2FA: row.user.totpKey !== null,
+  };
+  if (Date.now() >= session.expiresAt.getTime()) {
+    await prisma.passwordResetSession.delete({
+      where: {
+        id: session.id,
+      },
     });
-    if (row === null) {
-        return {session: null, user: null};
-    }
-    const session: PasswordResetSession = {
-        id: row.id,
-        userId: row.userId,
-        email: row.email,
-        code: row.code,
-        expiresAt: row.expiresAt,
-        emailVerified: row.emailVerified,
-        twoFactorVerified: row.twoFactorVerified
-    };
-    const user: User = {
-        id: row.user.id,
-        email: row.user.email,
-        username: row.user.username,
-        emailVerified: row.user.emailVerified,
-        registered2FA: row.user.totpKey !== null
-    };
-    if (Date.now() >= session.expiresAt.getTime()) {
-        await prisma.passwordResetSession.delete({
-            where: {
-                id: session.id
-            }
-        });
-        return {session: null, user: null};
-    }
-    return {session, user};
+    return { session: null, user: null };
+  }
+  return { session, user };
 }
 
 /**
@@ -124,15 +130,17 @@ export async function validatePasswordResetSessionToken(token: string): Promise<
  * @param {string} sessionId - The unique identifier of the password reset session.
  * @returns {Promise<void>} A promise that resolves when the update is complete.
  */
-export async function setPasswordResetSessionAsEmailVerified(sessionId: string): Promise<void> {
-    await prisma.passwordResetSession.update({
-        where: {
-            id: sessionId
-        },
-        data: {
-            emailVerified: true
-        }
-    });
+export async function setPasswordResetSessionAsEmailVerified(
+  sessionId: string,
+): Promise<void> {
+  await prisma.passwordResetSession.update({
+    where: {
+      id: sessionId,
+    },
+    data: {
+      emailVerified: true,
+    },
+  });
 }
 
 /**
@@ -144,15 +152,17 @@ export async function setPasswordResetSessionAsEmailVerified(sessionId: string):
  * @param {string} sessionId - The unique identifier of the password reset session.
  * @returns {Promise<void>} A promise that resolves when the update is complete.
  */
-export async function setPasswordResetSessionAs2FAVerified(sessionId: string): Promise<void> {
-    await prisma.passwordResetSession.update({
-        where: {
-            id: sessionId
-        },
-        data: {
-            twoFactorVerified: true
-        }
-    });
+export async function setPasswordResetSessionAs2FAVerified(
+  sessionId: string,
+): Promise<void> {
+  await prisma.passwordResetSession.update({
+    where: {
+      id: sessionId,
+    },
+    data: {
+      twoFactorVerified: true,
+    },
+  });
 }
 
 /**
@@ -164,12 +174,14 @@ export async function setPasswordResetSessionAs2FAVerified(sessionId: string): P
  * @param {number} userId - The unique identifier of the user.
  * @returns {Promise<void>} A promise that resolves when the sessions have been deleted.
  */
-export async function invalidateUserPasswordResetSessions(userId: number): Promise<void> {
-    await prisma.passwordResetSession.deleteMany({
-        where: {
-            userId
-        }
-    });
+export async function invalidateUserPasswordResetSessions(
+  userId: number,
+): Promise<void> {
+  await prisma.passwordResetSession.deleteMany({
+    where: {
+      userId,
+    },
+  });
 }
 
 /**
@@ -183,16 +195,18 @@ export async function invalidateUserPasswordResetSessions(userId: number): Promi
  * @returns {Promise<PasswordResetSessionValidationResult>} A promise that resolves to an object
  * containing the session and user data, or null values if the session is invalid.
  */
-export async function validatePasswordResetSessionRequest(event: RequestEvent): Promise<PasswordResetSessionValidationResult> {
-    const token = event.cookies.get("password_reset_session") ?? null;
-    if (token === null) {
-        return {session: null, user: null};
-    }
-    const result = await validatePasswordResetSessionToken(token);
-    if (result.session === null) {
-        deletePasswordResetSessionTokenCookie(event);
-    }
-    return result;
+export async function validatePasswordResetSessionRequest(
+  event: RequestEvent,
+): Promise<PasswordResetSessionValidationResult> {
+  const token = event.cookies.get("password_reset_session") ?? null;
+  if (token === null) {
+    return { session: null, user: null };
+  }
+  const result = await validatePasswordResetSessionToken(token);
+  if (result.session === null) {
+    deletePasswordResetSessionTokenCookie(event);
+  }
+  return result;
 }
 
 /**
@@ -206,14 +220,18 @@ export async function validatePasswordResetSessionRequest(event: RequestEvent): 
  * @param {Date} expiresAt - The expiration date and time for the cookie.
  * @returns {void}
  */
-export function setPasswordResetSessionTokenCookie(event: RequestEvent, token: string, expiresAt: Date): void {
-    event.cookies.set("password_reset_session", token, {
-        expires: expiresAt,
-        sameSite: "lax",
-        httpOnly: true,
-        path: "/",
-        secure: !import.meta.env.DEV
-    });
+export function setPasswordResetSessionTokenCookie(
+  event: RequestEvent,
+  token: string,
+  expiresAt: Date,
+): void {
+  event.cookies.set("password_reset_session", token, {
+    expires: expiresAt,
+    sameSite: "lax",
+    httpOnly: true,
+    path: "/",
+    secure: !import.meta.env.DEV,
+  });
 }
 
 /**
@@ -225,14 +243,16 @@ export function setPasswordResetSessionTokenCookie(event: RequestEvent, token: s
  * @param {RequestEvent} event - The HTTP request event containing the cookies API.
  * @returns {void}
  */
-export function deletePasswordResetSessionTokenCookie(event: RequestEvent): void {
-    event.cookies.set("password_reset_session", "", {
-        maxAge: 0,
-        sameSite: "lax",
-        httpOnly: true,
-        path: "/",
-        secure: !import.meta.env.DEV
-    });
+export function deletePasswordResetSessionTokenCookie(
+  event: RequestEvent,
+): void {
+  event.cookies.set("password_reset_session", "", {
+    maxAge: 0,
+    sameSite: "lax",
+    httpOnly: true,
+    path: "/",
+    secure: !import.meta.env.DEV,
+  });
 }
 
 /**
@@ -246,7 +266,7 @@ export function deletePasswordResetSessionTokenCookie(event: RequestEvent): void
  * @returns {void}
  */
 export function sendPasswordResetEmail(email: string, code: string): void {
-    console.log(`To ${email}: Your reset code is ${code}`);
+  console.log(`To ${email}: Your reset code is ${code}`);
 }
 
 /**
@@ -262,13 +282,13 @@ export function sendPasswordResetEmail(email: string, code: string): void {
  * @property {boolean} twoFactorVerified - Flag indicating if two-factor authentication has been verified.
  */
 export interface PasswordResetSession {
-    id: string;
-    userId: number;
-    email: string;
-    expiresAt: Date;
-    code: string;
-    emailVerified: boolean;
-    twoFactorVerified: boolean;
+  id: string;
+  userId: number;
+  email: string;
+  expiresAt: Date;
+  code: string;
+  emailVerified: boolean;
+  twoFactorVerified: boolean;
 }
 
 /**
@@ -279,5 +299,5 @@ export interface PasswordResetSession {
  * @property {User} user - The user associated with the session.
  */
 export type PasswordResetSessionValidationResult =
-    | { session: PasswordResetSession; user: User }
-    | { session: null; user: null };
+  | { session: PasswordResetSession; user: User }
+  | { session: null; user: null };

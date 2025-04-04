@@ -1,4 +1,4 @@
-import {writable} from "svelte/store";
+import { writable } from "svelte/store";
 
 // Ensure we are in the browser before accessing window
 const isBrowser = typeof window !== "undefined";
@@ -8,16 +8,16 @@ export const navSection = writable("null");
 
 // Has all the user sections stored
 export const navigationSections = [
-    ["Home", "/"],
-    ["Dashboard", "/"],
-    ["Settings", "/settings"],
+  ["Home", "/"],
+  ["Dashboard", "/"],
+  ["Settings", "/settings"],
 ];
 
 // Maybe add an getIndex() and getLink() method
 
 // Apply theme only in the browser
 if (isBrowser) {
-    navSection.subscribe((value) => {
-        localStorage.setItem("navSection", value);
-    });
+  navSection.subscribe((value) => {
+    localStorage.setItem("navSection", value);
+  });
 }

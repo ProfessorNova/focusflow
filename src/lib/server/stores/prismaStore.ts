@@ -1,5 +1,5 @@
-import {writable} from 'svelte/store';
-import {PrismaClient} from '@prisma/client';
+import { writable } from "svelte/store";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
