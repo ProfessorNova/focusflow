@@ -49,11 +49,11 @@ Based on the password requirements, there are following equivalence classes for 
 |--------------|--------------------|---------------------------------------------------------|--------------------|------------------|-------------------------------------------------------|
 | TC1          | `Ab!`              | TooShort                                                | Rule1              | Rejected         | very short password                                   |
 | TC2          | `Abcdefgh@`        | TooShort                                                | Rule1              | Rejected         | password outside lower boundary length                |
-| TC2          | `Abcdefghi#`       | ValidLength, HasUppercase, HasLowercase, HasSpecialChar | Rule6              | Approved         | password inside lower boundary length                 |
-| TC3          | `Abcdefghijkl$`    | TooLong                                                 | Rule2              | Rejected         | password outside upper boundary length                |
-| TC3          | `Abcdefghijk%`     | ValidLength, HasUppercase, HasLowercase, HasSpecialChar | Rule6              | Approved         | password inside upper boundary length                 |
-| TC4          | `Abcdefghijklmno^` | TooLong                                                 | Rule2              | Rejected         | too long password                                     |
-| TC5          | `abcdefghij&`      | ValidLength, NoUppercase                                | Rule3              | Rejected         | password doesnt contain at least on lower case letter |
-| TC6          | `ABCDEFGHIJ*`      | ValidLength, NoLowercase                                | Rule4              | Rejected         | password doesnt contain at least on upper case letter |
-| TC7          | `Abcdefghijk`      | ValidLength, NoSpecialChar                              | Rule5              | Rejected         | password doesnt contain at least on special character |
-| TC8          | `Abcdefghij?`      | ValidLength, HasUppercase, HasLowercase, HasSpecialChar | Rule6              | Approved         | password meets all requirements                       |
+| TC3          | `Abcdefghi#`       | ValidLength, HasUppercase, HasLowercase, HasSpecialChar | Rule6              | Approved         | password inside lower boundary length                 |
+| TC4          | `Abcdefghijkl$`    | TooLong                                                 | Rule2              | Rejected         | password outside upper boundary length                |
+| TC5          | `Abcdefghijk%`     | ValidLength, HasUppercase, HasLowercase, HasSpecialChar | Rule6              | Approved         | password inside upper boundary length                 |
+| TC6          | `Abcdefghijklmno^` | TooLong                                                 | Rule2              | Rejected         | too long password                                     |
+| TC7          | `abcdefghij&`      | ValidLength, NoUppercase                                | Rule3              | Rejected         | password doesnt contain at least on lower case letter |
+| TC8          | `ABCDEFGHIJ*`      | ValidLength, NoLowercase                                | Rule4              | Rejected         | password doesnt contain at least on upper case letter |
+| TC9          | `Abcdefghijk`      | ValidLength, NoSpecialChar                              | Rule5              | Rejected         | password doesnt contain at least on special character |
+| TC10         | `Abcdefghij?`      | ValidLength, HasUppercase, HasLowercase, HasSpecialChar | Rule6              | Approved         | password meets all requirements                       |
