@@ -1,5 +1,7 @@
 # White Box Testing
 
+Based on the implementation of the createTask function, we derived 15 different test cases with a corresponding example value all shown in the  table below.
+
 | Case                      | Title                                                                                    | shortDescription                                                                                                                                                                            | longDescription | dueDate    | priority | assigneeId | teamId | createdById | tagIds |
 |---------------------------|------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|------------|----------|------------|--------|-------------|--------|
 | Valid                     | Implement login feature                                                                  | Develop a secure login system for all users                                                                                                                                                 | -               | 2026-05-01 | High     | 12         | -      | 1           | [3, 7] |
