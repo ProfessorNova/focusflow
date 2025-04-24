@@ -35,6 +35,9 @@ it("gets tasks assigned to a user by userId", async () => {
     where: {
       userId: 123,
     },
+    orderBy: {
+      status: "asc",
+    },
   });
   expect(result).toEqual(mockTasks);
 });
@@ -47,6 +50,9 @@ it("gets tasks assigned to a team by teamId", async () => {
   expect(__mockPrisma.task.findMany).toHaveBeenCalledWith({
     where: {
       teamId: 123,
+    },
+    orderBy: {
+      status: "asc",
     },
   });
   expect(result).toEqual(mockTasks);
