@@ -19,3 +19,31 @@ export interface User {
   createdAt?: Date;
   lastLogin?: Date;
 }
+
+// User object mock for testing purposes
+export class UserMock implements User {
+  id: number;
+  email: string;
+  username: string;
+  emailVerified: boolean;
+  registered2FA: boolean;
+  createdAt: Date;
+  lastLogin: Date;
+
+  constructor(id: number, email: string, username: string, emailVerified: boolean, registered2FA: boolean, createdAt: Date|null) {
+    this.id = id;
+    this.email = email;
+    this.username = username;
+    this.emailVerified = emailVerified;
+    this.registered2FA = registered2FA;
+    this.createdAt = createdAt ?? new Date();
+    this.lastLogin = this.createdAt;
+  }
+
+  setVerified(verified: boolean): void {
+    this.emailVerified = verified;
+  }
+  isVerified(): boolean {
+    return this.emailVerified;
+  }
+}

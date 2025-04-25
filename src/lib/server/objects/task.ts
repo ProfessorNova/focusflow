@@ -178,7 +178,7 @@ export interface Task {
 }
 
 // Additional object of the actual interface to test functions
-export class TTask implements Task {
+export class TaskMock implements Task {
   id: number;
   title: string;
   teaser: string;
