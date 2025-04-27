@@ -4,7 +4,13 @@ All tests are located in the `tests` directory.
 
 ---
 
-## Tests for Tasks
+## Unit Tests
+
+---
+
+## Mock tests
+
+### Tests for Tasks
 
 To create tests for the task object, firstly a mock of the prismaClient was
 created with the functions needed for testing.
@@ -35,7 +41,7 @@ Tests are implemented for following functions:
 - `createTask`
 - `deleteTask`
 
-## Tests for Teams
+### Tests for Teams
 
 For the creation of unit tests for the `team` object the same procedure as for
 the creation of tests for `task` was followed.
@@ -70,7 +76,7 @@ Tests are implemented for following functions:
 - `getAllTeams`
 - `deleteTeam`
 
-## Tests for User
+### Tests for User
 
 As to not repeat trivial procedures again this part will be kept shorter.
 Tests for the `user` object are also implemented in the same way as tests for
@@ -81,7 +87,8 @@ which is why those functions also needed to be mocked in some of the tests.
 
 For example:
 
-```it('updates the user password', async () => {
+```
+it('updates the user password', async () => {
     vi.spyOn(authUtils, 'hashPassword').mockResolvedValue('hashed_pw');
 
     await userModule.updateUserPassword(1, 'newpassword');
@@ -93,9 +100,11 @@ For example:
 });
 ```
 
-The function `updateUserPassword()` uses the function `hashPassword()`. In the test we mock the `hashPassword()` function and tell it what it will have to return. In this case it will return "hashed_pw".
+The function `updateUserPassword()` uses the function `hashPassword()`. In the test we mock the `hashPassword()`
+function and tell it what it will have to return. In this case it will return "hashed_pw".
 
-Some functions also received multiple tests for testing with valid and invalid data to ensure the function reacts accordingly.
+Some functions also received multiple tests for testing with valid and invalid data to ensure the function reacts
+accordingly.
 
 Tests are implemented for following functions:
 
