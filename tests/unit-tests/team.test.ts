@@ -42,7 +42,7 @@ describe('Team Class Methods', () => {
         // Verify that the members were added
         expect(TestingTeam?.isInTeam(user1)).toBe(true);
         expect(TestingTeam?.isInTeam(user2.id)).toBe(true);
-        expect(TestingTeam?.isInTeam(user3)).toBe(false);       // false positive check
+        expect(TestingTeam?.isInTeam(user3)).toBe(false);
         expect(TestingTeam?.isInTeam(user3.id)).toBe(false);
         // Removes members from the team
         TestingTeam?.removeMember(user1);

@@ -32,9 +32,33 @@ describe('User Class', () => {
 });
 
 describe('User Class Methods', () => {
-    it('verifies user correctly by email', () => {
+    it('verifies the user by his email', () => {
         expect(TestingUser?.isVerified()).toBe(false);
         TestingUser?.setVerified(true); // Set the user as verified
         expect(TestingUser?.isVerified()).toBe(true);
+    });
+    it('verifies correct user name input', () => {
+        const userName1 = "Not";
+        const userName2 = "ValidUserName";
+        const userName3 = "__________InvalidUserName__________";
+        const userName4 = " InvalidUserName ";
+        const userName5 = "Allemeineentchenschwimmenaufdemsee";
+
+        expect(TestingUser?.verifyUsernameInput(userName1)).toBe(false);
+        expect(TestingUser?.verifyUsernameInput(userName2)).toBe(true);
+        expect(TestingUser?.verifyUsernameInput(userName3)).toBe(false);
+        expect(TestingUser?.verifyUsernameInput(userName4)).toBe(false);
+        expect(TestingUser?.verifyUsernameInput(userName5)).toBe(false);
+    });
+    it('verifies password strength', async () => {
+        const password1 = "Longer";
+        const password2 = "IsSafeEnough";
+        const password3 = "VeryS1r0ngP@ssword";
+        const password4 = "QWERTZ1234!";
+
+        expect(await TestingUser?.verifyPasswordStrength(password1)).toBe(false);
+        expect(await TestingUser?.verifyPasswordStrength(password2)).toBe(true);
+        expect(await TestingUser?.verifyPasswordStrength(password3)).toBe(true);
+        expect(await TestingUser?.verifyPasswordStrength(password4)).toBe(false);
     });
 });

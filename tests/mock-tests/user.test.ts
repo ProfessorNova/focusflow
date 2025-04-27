@@ -30,23 +30,23 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-it("verify Username Input with valid Input", async () => {
-  const mockUsername = "MoistyMireMaurice";
-  const result = userModule.verifyUsernameInput(mockUsername);
-  expect(result).toEqual(true);
-});
+// it("verify Username Input with valid Input", async () => {
+//   const mockUsername = "MoistyMireMaurice";
+//   const result = userModule.verifyUsernameInput(mockUsername);
+//   expect(result).toEqual(true);
+// });
 
-it("verify Username Input with too few characters", async () => {
-  const mockUsername = "ui";
-  const result = userModule.verifyUsernameInput(mockUsername);
-  expect(result).toEqual(false);
-});
+// it("verify Username Input with too few characters", async () => {
+//   const mockUsername = "ui";
+//   const result = userModule.verifyUsernameInput(mockUsername);
+//   expect(result).toEqual(false);
+// });
 
-it("verify Username Input with too many characters", async () => {
-  const mockUsername = "Allemeineentchenschwimmenaufdemsee";
-  const result = userModule.verifyUsernameInput(mockUsername);
-  expect(result).toEqual(false);
-});
+// it("verify Username Input with too many characters", async () => {
+//   const mockUsername = "Allemeineentchenschwimmenaufdemsee";
+//   const result = userModule.verifyUsernameInput(mockUsername);
+//   expect(result).toEqual(false);
+// });
 
 it("creates a user", async () => {
   const mockRow = {
