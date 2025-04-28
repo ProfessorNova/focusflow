@@ -1,4 +1,5 @@
 import type {
+  $Enums,
   PrismaClient,
   Tag,
   TaskPriority,
@@ -162,6 +163,7 @@ export async function deleteTask(taskId: number): Promise<Task> {
  * @property {TaskPriority} priority - The priority level of the task.
  * @property {Tag[]} tags - An array of tags associated with the task.
  * @property {TaskStatus} status - The current status of the task.
+ * @property {boolean} changed - Will change for a short time when task updates.
  */
 export interface Task {
   id: number;
@@ -173,4 +175,44 @@ export interface Task {
   tags: Tag[];
   status: TaskStatus;
   changed: boolean;
+}
+
+// Additional object of the actual interface to test functions
+export class TaskMock implements Task {
+  id: number;
+  title: string;
+  teaser: string;
+  description: string;
+  dueDate: Date;
+  priority: $Enums.TaskPriority;
+  tags: $Enums.Tag[];
+  status: $Enums.TaskStatus;
+  changed: boolean;
+  
+  constructor(id: number, title: string, teaser: string, description: string, dueDate: Date | null, priority: $Enums.TaskPriority, tags: $Enums.Tag[], status: $Enums.TaskStatus, changed: boolean) {
+    this.id = id;
+    this.title = title;
+    this.teaser = teaser;
+    this.description = description;
+    this.dueDate = dueDate ?? new Date(new Date().setHours(23, 59, 59, 999));
+    this.priority = priority;
+    this.tags = tags;
+    this.status = status;
+    this.changed = changed;
+  }
+
+  // Methods which can be tested with Unit Tests
+  setDueDate(dueDate: Date): void {
+    this.dueDate = dueDate;
+  }
+  IsTaskOverdue(date: Date = new Date()): boolean {
+    return this.dueDate < date;
+  }
+
+  setChanged(changed: boolean): void {
+    this.changed = changed;
+    setTimeout(() => {
+      this.changed = false;
+    }, 5000); // Reset changed after 5 seconds
+  }
 }
