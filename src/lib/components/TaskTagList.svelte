@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Tag } from "@prisma/client";
+    import { Tag } from "$lib/../generated/prisma";
     import { X } from "lucide-svelte";
     import { onMount } from "svelte";
 

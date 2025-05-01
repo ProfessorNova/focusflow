@@ -19,10 +19,10 @@
         teaser: string,
         tag: string[],
         description: string,
-        changed: boolean,
+        // changed: boolean,
     }> = $state([]);
     // New form of declaring variables in runes version (cant mix old with new syntax)
-    // Also updates UI when changed
+    // Also updates UI when changed is implemented
     let error: string | null = $state("");
     let editTaskSuccess = $state(false);
     let taskModalClosed = $state(false);
@@ -68,7 +68,7 @@
             if (res.ok) {
                 const newTask = await res.json();
                 tasks.unshift(newTask); // = [...tasks, newTask];
-                // To directly sort this tasks right call refreshTasks
+                // To directly sort tasks call refreshTasks
             } else {
                 error = "Failed to create task.";
             }
@@ -134,7 +134,7 @@
         <!-- List of tasks with collapsible descriptions -->
         <ul class="list bg-base-100 rounded-box shadow-md">
             {#each tasks as task (task.id)}
-                <!-- id to identify changed task | class property (list-row) does weird things -->
+                <!-- id to identify changed task | class property (list-row) does weird things | transition:fly={{x: 50, duration: 300}} -->
                 <li id="{task.id.toString()}" class="flex p-2 rounded-xl items-center justify-between" transition:fly={{x: 50, duration: 300}}>
                     <div class="flex gap-2 items-center">
                         <div>

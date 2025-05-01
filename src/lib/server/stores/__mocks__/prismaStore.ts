@@ -1,4 +1,4 @@
-import {PrismaClient} from "../../../../../generated/prisma";
+import {PrismaClient} from "$lib/../generated/prisma";
 import {beforeEach} from 'vitest'
 import {mockDeep, mockReset} from 'vitest-mock-extended'
 
