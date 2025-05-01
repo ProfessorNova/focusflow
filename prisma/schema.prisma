@@ -89,7 +89,6 @@ model Task {
   priority    TaskPriority
   tags        Tag[]
   status      TaskStatus
-  changed     Boolean
 
   userId Int?
   teamId Int?

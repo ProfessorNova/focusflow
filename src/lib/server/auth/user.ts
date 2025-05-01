@@ -1,9 +1,8 @@
-import { decrypt, decryptToString, encrypt, encryptString } from "./encryption";
-import { hashPassword } from "./password";
-import { generateRandomRecoveryCode } from "./utils";
-import type { PrismaClient } from "@prisma/client";
-import { prismaClient } from "$lib/server/stores/prismaStore";
-import type { User } from "$lib/server/objects/user";
+import {decrypt, decryptToString, encrypt, encryptString} from "./encryption";
+import {hashPassword} from "./password";
+import {generateRandomRecoveryCode} from "./utils";
+import prisma from "$lib/prisma";
+import type {User} from "$lib/server/objects/user";
 
 /**
  * Validates the provided username input.
@@ -19,11 +18,6 @@ export function verifyUsernameInput(username: string): boolean {
     username.length > 3 && username.length < 32 && username.trim() === username
   );
 }
-
-let prisma: PrismaClient;
-prismaClient.subscribe((value) => {
-  prisma = value;
-});
 
 /**
  * Creates a new user in the database.

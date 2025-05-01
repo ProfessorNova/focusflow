@@ -1,16 +1,5 @@
-import type {
-  $Enums,
-  PrismaClient,
-  Tag,
-  TaskPriority,
-  TaskStatus,
-} from "@prisma/client";
-import { prismaClient } from "$lib/server/stores/prismaStore";
-
-let prisma: PrismaClient;
-prismaClient.subscribe((value) => {
-  prisma = value;
-});
+import type {$Enums, Tag, TaskPriority, TaskStatus,} from "../../../generated/prisma";
+import prisma from "$lib/prisma";
 
 /**
  * Creates a new task in the database.
@@ -27,7 +16,6 @@ prismaClient.subscribe((value) => {
  * @param {TaskPriority} [priority="Low"] - (Optional) The priority level of the task.
  * @param {Tag[]} [tags=[]] - (Optional) An array of tags associated with the task.
  * @param {TaskStatus} [status="Open"] - (Optional) The current status of the task.
- * @param {boolean} [changed=false] - (Optional) Indicates whether the task has been changed.
  * @returns {Promise<Task>} A promise that resolves to the newly created Task object.
  */
 export async function createTask(
@@ -40,7 +28,6 @@ export async function createTask(
   priority: TaskPriority = "Low",
   tags: Tag[] = [],
   status: TaskStatus = "Open",
-  changed: boolean = false,
 ): Promise<Task> {
   return prisma.task.create({
     data: {
@@ -51,7 +38,6 @@ export async function createTask(
       priority,
       tags,
       status,
-      changed,
       userId,
       teamId,
     },
@@ -163,7 +149,6 @@ export async function deleteTask(taskId: number): Promise<Task> {
  * @property {TaskPriority} priority - The priority level of the task.
  * @property {Tag[]} tags - An array of tags associated with the task.
  * @property {TaskStatus} status - The current status of the task.
- * @property {boolean} changed - Will change for a short time when task updates.
  */
 export interface Task {
   id: number;
@@ -174,7 +159,6 @@ export interface Task {
   priority: TaskPriority;
   tags: Tag[];
   status: TaskStatus;
-  changed: boolean;
 }
 
 // Additional object of the actual interface to test functions
@@ -187,9 +171,8 @@ export class TaskMock implements Task {
   priority: $Enums.TaskPriority;
   tags: $Enums.Tag[];
   status: $Enums.TaskStatus;
-  changed: boolean;
   
-  constructor(id: number, title: string, teaser: string, description: string, dueDate: Date | null, priority: $Enums.TaskPriority, tags: $Enums.Tag[], status: $Enums.TaskStatus, changed: boolean) {
+  constructor(id: number, title: string, teaser: string, description: string, dueDate: Date | null, priority: $Enums.TaskPriority, tags: $Enums.Tag[], status: $Enums.TaskStatus) {
     this.id = id;
     this.title = title;
     this.teaser = teaser;
@@ -198,7 +181,6 @@ export class TaskMock implements Task {
     this.priority = priority;
     this.tags = tags;
     this.status = status;
-    this.changed = changed;
   }
 
   // Methods which can be tested with Unit Tests
@@ -207,12 +189,5 @@ export class TaskMock implements Task {
   }
   IsTaskOverdue(date: Date = new Date()): boolean {
     return this.dueDate < date;
-  }
-
-  setChanged(changed: boolean): void {
-    this.changed = changed;
-    setTimeout(() => {
-      this.changed = false;
-    }, 5000); // Reset changed after 5 seconds
   }
 }
