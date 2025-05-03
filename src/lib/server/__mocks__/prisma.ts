@@ -1,12 +1,15 @@
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../generated/prisma";
-import dotenv from "dotenv";
+// src/lib/server/__mocks__/prisma.ts
+import type { PrismaClient } from '@prisma/client'
+import { beforeEach }        from 'vitest'
+import { mockDeep, mockReset } from 'vitest-mock-extended'
 
-dotenv.config();
+// 1️⃣ create a shared “deep” mock of PrismaClient
+const prismaMock = mockDeep<PrismaClient>()
 
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL,
-});
-const prisma = new PrismaClient({ adapter });
+// 2️⃣ reset its state before each test
+beforeEach(() => {
+  mockReset(prismaMock)
+})
 
-export default prisma;
+// 3️⃣ default‐export the mock so Vitest will substitute it
+export default prismaMock
