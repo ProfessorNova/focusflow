@@ -5,14 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
-
-  // Optional
-  runtime                = "nodejs"
-  moduleFormat           = "esm"
-  generatedFileExtension = "ts"
-  importFileExtension    = "ts"
+  provider        = "prisma-client"
+  previewFeatures = ["driverAdapters"]
+  output          = "../src/lib/server/generated/prisma"
 }
 
 datasource db {

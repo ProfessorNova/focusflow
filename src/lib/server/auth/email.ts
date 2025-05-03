@@ -1,10 +1,4 @@
-import type { PrismaClient } from "@prisma/client";
-import { prismaClient } from "$lib/server/stores/prismaStore";
-
-let prisma: PrismaClient;
-prismaClient.subscribe((value) => {
-  prisma = value;
-});
+import prisma from "$lib/server/prisma";
 
 /**
  * Verifies that the provided email address is in a valid format and does not exceed the length limit.

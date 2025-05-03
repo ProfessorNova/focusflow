@@ -1,8 +1,8 @@
-import {decrypt, decryptToString, encrypt, encryptString} from "./encryption";
-import {hashPassword} from "./password";
-import {generateRandomRecoveryCode} from "./utils";
-import prisma from "$lib/prisma";
-import type {User} from "$lib/server/objects/user";
+import { decrypt, decryptToString, encrypt, encryptString } from "./encryption";
+import { hashPassword } from "./password";
+import { generateRandomRecoveryCode } from "./utils";
+import prisma from "$lib/server/prisma";
+import type { User } from "$lib/server/objects/user";
 
 /**
  * Validates the provided username input.

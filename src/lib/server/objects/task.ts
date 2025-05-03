@@ -1,5 +1,5 @@
-import type {$Enums, Tag, TaskPriority, TaskStatus,} from "../../../generated/prisma";
-import prisma from "$lib/prisma";
+import type { $Enums, Tag, TaskPriority, TaskStatus } from "./../generated/prisma";
+import prisma from "$lib/server/prisma";
 
 /**
  * Creates a new task in the database.
@@ -171,8 +171,17 @@ export class TaskMock implements Task {
   priority: $Enums.TaskPriority;
   tags: $Enums.Tag[];
   status: $Enums.TaskStatus;
-  
-  constructor(id: number, title: string, teaser: string, description: string, dueDate: Date | null, priority: $Enums.TaskPriority, tags: $Enums.Tag[], status: $Enums.TaskStatus) {
+
+  constructor(
+    id: number,
+    title: string,
+    teaser: string,
+    description: string,
+    dueDate: Date | null,
+    priority: $Enums.TaskPriority,
+    tags: $Enums.Tag[],
+    status: $Enums.TaskStatus,
+  ) {
     this.id = id;
     this.title = title;
     this.teaser = teaser;
@@ -187,6 +196,7 @@ export class TaskMock implements Task {
   setDueDate(dueDate: Date): void {
     this.dueDate = dueDate;
   }
+
   IsTaskOverdue(date: Date = new Date()): boolean {
     return this.dueDate < date;
   }
