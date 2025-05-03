@@ -1,0 +1,11 @@
+{
+    "default": {
+        "paths": [
+            "src/tests/features/"
+        ],
+        "publishQuiet": true,
+        "require": [
+            "ts-node/register"
+        ]
+    }
+}

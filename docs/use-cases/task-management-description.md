@@ -43,8 +43,8 @@
 ### Exceptions/Extensions (Alternate Flows)
 
     - 7a. Invalid deadline:
-        - 4a1. Systems displays an error message for the incorrect field
-        - 4a2. User corrects the deadline and saves his change
+        - 7a1. Systems displays an error message for the incorrect field
+        - 7a2. User corrects the deadline and saves his change
 
 ### Outputs and Post-Conditions:
 
