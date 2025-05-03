@@ -1,10 +1,9 @@
 <script lang="ts">
     import {onMount} from "svelte";
     import {fly} from "svelte/transition";
-    import {ListPlus, Pencil, RefreshCcw, Trash2} from "lucide-svelte";
+    import {ListPlus, Pencil, Trash2} from "lucide-svelte";
     import Modal from "$lib/components/Modal.svelte";
     import EditTaskForm from "$lib/components/EditTaskForm.svelte";
-    import TaskStatusSelection from "$lib/components/TaskStatusSelection.svelte";
     import TaskDate from "$lib/components/TaskDate.svelte";
     import Banner from "./Banner.svelte";
     import TaskEditor from "./TaskEditor.svelte";
@@ -20,20 +19,13 @@
         teaser: string,
         tag: string[],
         description: string,
-        changed: boolean,
+        // changed: boolean,
     }> = $state([]);
     // New form of declaring variables in runes version (cant mix old with new syntax)
-    // Also updates UI when changed
+    // Also updates UI when changed is implemented
     let error: string | null = $state("");
     let editTaskSuccess = $state(false);
     let taskModalClosed = $state(false);
-
-    // New $:{} => reacts on variables inside the scope
-    $effect(() => {
-        if(editTaskSuccess || tasks.find((_task) => _task.changed)){
-            refreshTasks();
-        }
-    });
 
     /**
      * Lifecycle function to load tasks when the component mounts.
@@ -76,7 +68,7 @@
             if (res.ok) {
                 const newTask = await res.json();
                 tasks.unshift(newTask); // = [...tasks, newTask];
-                // To directly sort this tasks right call refreshTasks
+                // To directly sort tasks call refreshTasks
             } else {
                 error = "Failed to create task.";
             }
@@ -142,13 +134,9 @@
         <!-- List of tasks with collapsible descriptions -->
         <ul class="list bg-base-100 rounded-box shadow-md">
             {#each tasks as task (task.id)}
-                <!-- id to identify changed task | class property (list-row) does weird things -->
-                <li id="{task.id.toString()}" class="flex p-2 rounded-xl items-center justify-between {task.changed ? "bg-info/[0.5]" : ""}" transition:fly={{x: 50, duration: 300}}>
+                <!-- id to identify changed task | class property (list-row) does weird things | transition:fly={{x: 50, duration: 300}} -->
+                <li id="{task.id.toString()}" class="flex p-2 rounded-xl items-center justify-between" transition:fly={{x: 50, duration: 300}}>
                     <div class="flex gap-2 items-center">
-                        <div>
-                            <!-- Bindables like this shouldnt be used too often -->
-                            <TaskStatusSelection taskId={task.id} bind:statusChanged={task.changed}/>
-                        </div>
                         <div>
                             <div>{task.title}</div>
                             <div class="text-xs uppercase font-semibold opacity-60">{task.teaser}</div>

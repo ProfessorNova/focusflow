@@ -1,7 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
 
-    
     let props = $props();
     
     let taskId: number = props.taskId;

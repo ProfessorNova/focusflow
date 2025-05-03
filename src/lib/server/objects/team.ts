@@ -1,11 +1,5 @@
-import type { PrismaClient } from "@prisma/client";
-import { prismaClient } from "$lib/server/stores/prismaStore";
-import type { User } from "./user";
-
-let prisma: PrismaClient;
-prismaClient.subscribe((value) => {
-  prisma = value;
-});
+import type {User} from "./user";
+import prisma from "$lib/prisma";
 
 /**
  * Creates a new team in the database.
