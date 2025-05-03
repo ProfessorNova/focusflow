@@ -1,16 +1,9 @@
 import { encodeHexLowerCase } from "@oslojs/encoding";
 import { generateRandomOTP } from "./utils";
 import { sha256 } from "@oslojs/crypto/sha2";
-
 import type { RequestEvent } from "@sveltejs/kit";
 import type { User } from "$lib/server/objects/user";
-import type { PrismaClient } from "@prisma/client";
-import { prismaClient } from "$lib/server/stores/prismaStore";
-
-let prisma: PrismaClient;
-prismaClient.subscribe((value) => {
-  prisma = value;
-});
+import prisma from "$lib/server/prisma";
 
 /**
  * Creates a new password reset session for a user.

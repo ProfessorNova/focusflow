@@ -1,15 +1,8 @@
 import { generateRandomOTP } from "./utils";
 import { ExpiringTokenBucket } from "./rate-limit";
 import { encodeBase32 } from "@oslojs/encoding";
-
 import type { RequestEvent } from "@sveltejs/kit";
-import type { PrismaClient } from "@prisma/client";
-import { prismaClient } from "$lib/server/stores/prismaStore";
-
-let prisma: PrismaClient;
-prismaClient.subscribe((value) => {
-  prisma = value;
-});
+import prisma from "$lib/server/prisma";
 
 /**
  * Retrieves a user's email verification request from the database.

@@ -1,5 +1,5 @@
-import type {User} from "./user";
-import prisma from "$lib/prisma";
+import type { User } from "./user";
+import prisma from "$lib/server/prisma";
 
 /**
  * Creates a new team in the database.
@@ -197,7 +197,13 @@ export class TeamMock implements Team {
   createdAt: Date;
   members: User[];
 
-  constructor(id: number, name: string, description: string, createdAt: Date|null, members: User[] = []) {
+  constructor(
+    id: number,
+    name: string,
+    description: string,
+    createdAt: Date | null,
+    members: User[] = [],
+  ) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -208,12 +214,14 @@ export class TeamMock implements Team {
   addMember(user: User): void {
     this.members.push(user);
   }
-  removeMember(idOrUser: number|User): void {
-    const userId = typeof idOrUser === 'number' ? idOrUser : idOrUser.id;
+
+  removeMember(idOrUser: number | User): void {
+    const userId = typeof idOrUser === "number" ? idOrUser : idOrUser.id;
     this.members = this.members.filter((member) => member.id !== userId);
   }
-  isInTeam(idOrUser: number|User): boolean {
-    const userId = typeof idOrUser === 'number' ? idOrUser : idOrUser.id;
+
+  isInTeam(idOrUser: number | User): boolean {
+    const userId = typeof idOrUser === "number" ? idOrUser : idOrUser.id;
     return this.members.some((member) => member.id === userId);
   }
 }

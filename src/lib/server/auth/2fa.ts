@@ -1,13 +1,7 @@
 import { decryptToString, encryptString } from "./encryption";
 import { ExpiringTokenBucket } from "./rate-limit";
 import { generateRandomRecoveryCode } from "./utils";
-import type { PrismaClient } from "@prisma/client";
-import { prismaClient } from "$lib/server/stores/prismaStore";
-
-let prisma: PrismaClient;
-prismaClient.subscribe((value) => {
-  prisma = value;
-});
+import prisma from "$lib/server/prisma";
 
 /**
  * Rate limiter bucket for two-factor authentication (TOTP) attempts.

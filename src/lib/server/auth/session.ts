@@ -6,21 +6,11 @@
  * hashed, and stored in the database using a Prisma Client instance.
  */
 
-import {
-  encodeBase32LowerCaseNoPadding,
-  encodeHexLowerCase,
-} from "@oslojs/encoding";
+import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from "@oslojs/encoding";
 import { sha256 } from "@oslojs/crypto/sha2";
-
 import type { User } from "$lib/server/objects/user";
 import type { RequestEvent } from "@sveltejs/kit";
-import type { PrismaClient } from "@prisma/client";
-import { prismaClient } from "$lib/server/stores/prismaStore";
-
-let prisma: PrismaClient;
-prismaClient.subscribe((value) => {
-  prisma = value;
-});
+import prisma from "$lib/server/prisma";
 
 /**
  * Validates a session token by hashing it and checking its existence and validity in the database.
