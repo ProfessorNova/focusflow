@@ -3,7 +3,7 @@ import * as userModule from "$lib/server/auth/user";
 import * as authUtils from "$lib/server/auth/password";
 import * as encryptModule from "$lib/server/auth/encryption";
 import * as utils from "$lib/server/auth/utils";
-import { prismaMock } from "$lib/server/__mocks__/prisma";
+import prismaMock from "$lib/server/__mocks__/prisma";
 
 vi.mock("$lib/server/stores/prismaStore");
 

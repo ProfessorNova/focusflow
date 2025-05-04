@@ -1,5 +1,9 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { chromium, type Page, type Browser } from "@playwright/test";
+import prismaMock from "$lib/server/__mocks__/prisma";
+import { vi } from 'vitest';
+
+vi.mock("$lib/server/prisma");
 
 let browser: Browser;
 let page: Page;
@@ -15,6 +19,17 @@ Given('User is registered', async function () {
    */
   browser = await chromium.launch({ headless: false });
   page = await browser.newPage();
+
+  // Creating a mock user in the database
+  const mockRow = {
+      id: 1,
+      email: EMAIL,
+      username: "Test",
+      passwordHash: PASSWORD,
+      recoveryCode: "code",
+    };
+    prismaMock.user.create.mockResolvedValue(mockRow);
+
   await page.goto("http://localhost:5173/login");
 });
 
@@ -33,7 +48,7 @@ When('User enters valid credentials', async function () {
    *
    * @returns {Promise<void>}
    */
-  await page.fill('input[name="username"]', EMAIL);
+  await page.fill('input[id="form-login.email"]', EMAIL);
   await page.fill('input[name="password"]', PASSWORD);
   await page.click('button[type="submit"]');
 });
@@ -80,4 +95,58 @@ Then('System should load existing tasks', async function () {
    * @returns {Promise<void>}
    */
   await this.page.waitForSelector('.task-item');
+});
+
+
+Given('User is on the dashboard page', async function () {
+  /**
+   * Navigates to the dashboard page of the application.
+   *
+   * @returns {Promise<void>}
+   */
+  await page.goto('http://localhost:5173');
+});
+
+When('User selects a task', async function () {
+  /**
+   * Clicks on a task item to select it.
+   *
+   * @returns {Promise<void>}
+   */
+  await page.click('.task-item:first-child'); // Adjust selector as needed
+});
+
+When('User changes the task status to {string}', async function (status: string) {
+  /**
+   * Changes the status of the selected task.
+   *
+   * @param status The new status to set for the task.
+   * @returns {Promise<void>}
+   */
+  await page.selectOption('select[name="status"]', status);
+  await page.click('button[type="submit"]'); // Submit the form or save changes
+});
+
+Then('System should update the task status', async function () {
+  /**
+   * Verifies that the task status has been updated successfully.
+   *
+   * @returns {Promise<void>}
+   */
+  const statusText = await page.textContent('.task-item:first-child .status'); // Adjust selector as needed
+  if (statusText !== 'Updated') {
+    throw new Error('Task status was not updated successfully');
+  }
+});
+
+Then('User should see the updated status in the list', async function () {
+  /**
+   * Verifies that the updated status is visible in the task list.
+   *
+   * @returns {Promise<void>}
+   */
+  const statusText = await page.textContent('.task-item:first-child .status'); // Adjust selector as needed
+  if (statusText !== 'Updated') {
+    throw new Error('Task status was not updated successfully');
+  }
 });

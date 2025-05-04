@@ -1,7 +1,7 @@
 module.exports = {
   default: [
     '--loader ts-node/esm',
-    '--import tests/features/step_definitions/**/*.ts',
+    '--import tests/steps/**/*.ts',
     'tests/features/**/*.feature'
   ].join(' ')
 };
