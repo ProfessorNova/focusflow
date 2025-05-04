@@ -1,8 +1,8 @@
 import { beforeEach, expect, vi, test } from "vitest";
 import * as taskModule from "$lib/server/objects/task";
-import { prismaMock } from "$lib/server/__mocks__/prisma";
+import prismaMock from "$lib/server/__mocks__/prisma";
 
-vi.mock("$lib/server/stores/prismaStore");
+vi.mock("$lib/server/prisma");
 
 beforeEach(() => {
   vi.clearAllMocks();
