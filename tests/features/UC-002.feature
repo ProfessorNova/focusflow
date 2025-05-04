@@ -1,17 +1,20 @@
 Feature: User Registration
   As a new user
-  wants to use the functionality of the system
+  I want to use the functionality of the system
 
   Background:
     Given User is not registered
     And User is on the registration page
 
-  Scenario: User registers successfully
+  Scenario Outline: User registers successfully
     When User enters username "<username>"
     And User enters email "<email>"
     And User enters password "<password>"
+    And User submits the registration form
+    And User completes two-factor authentication with code "<code>"
+    Then User should see the landing page
+    And User account "<username>" exists in the system
 
-  | username | email         | password  |
-  | user1    | test@test.com | password1 |
-
-# ... other Scenarios for UC-002
+    Examples:
+      | username | email          | password   | code   |
+      | user1    | test@test.com  | password1  | 123456 |
