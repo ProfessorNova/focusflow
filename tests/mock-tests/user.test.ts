@@ -3,31 +3,13 @@ import * as userModule from "$lib/server/auth/user";
 import * as authUtils from "$lib/server/auth/password";
 import * as encryptModule from "$lib/server/auth/encryption";
 import * as utils from "$lib/server/auth/utils";
-import { prismaMock } from "$lib/server/__mocks__/prisma";
+import prismaMock from "$lib/server/__mocks__/prisma";
 
-vi.mock("$lib/server/stores/prismaStore");
+vi.mock("$lib/server/prisma");
 
 beforeEach(() => {
   vi.clearAllMocks();
 });
-
-// it("verify Username Input with valid Input", async () => {
-//   const mockUsername = "MoistyMireMaurice";
-//   const result = userModule.verifyUsernameInput(mockUsername);
-//   expect(result).toEqual(true);
-// });
-
-// it("verify Username Input with too few characters", async () => {
-//   const mockUsername = "ui";
-//   const result = userModule.verifyUsernameInput(mockUsername);
-//   expect(result).toEqual(false);
-// });
-
-// it("verify Username Input with too many characters", async () => {
-//   const mockUsername = "Allemeineentchenschwimmenaufdemsee";
-//   const result = userModule.verifyUsernameInput(mockUsername);
-//   expect(result).toEqual(false);
-// });
 
 test("creates a user", async () => {
   const mockRow = {
