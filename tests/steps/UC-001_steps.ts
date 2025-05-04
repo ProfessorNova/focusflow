@@ -1,6 +1,6 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { chromium, type Page, type Browser } from "@playwright/test";
-import prismaMock from "$lib/server/__mocks__/prisma";
+import prismaMock from "../../src/lib/server/__mocks__/prisma";
 import { vi } from 'vitest';
 
 vi.mock("$lib/server/prisma");
