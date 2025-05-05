@@ -1,17 +1,19 @@
-import { Given, When, Then } from '@cucumber/cucumber';
+import { Given, When, Then, setDefaultTimeout } from '@cucumber/cucumber';
 import { chromium, type Page, type Browser } from "@playwright/test";
-import prismaMock from "../../src/lib/server/__mocks__/prisma";
-import { vi } from 'vitest';
+// import prismaMock from "../../src/lib/server/__mocks__/prisma";
+// import prismaMock from "$lib/server/__mocks__/prisma";
+// import { vi } from 'vitest';
 
-vi.mock("$lib/server/prisma");
+// vi.mock("$lib/server/prisma");
 
 let browser: Browser;
 let page: Page;
 
 const EMAIL = 'test@test.com';
 const PASSWORD = 'testpass';
+setDefaultTimeout(5 * 1000); // Set default timeout for all steps
 
-Given('User is registered', async function () {
+Given('User is registered', { timeout: 30 * 1000 }, async function () {
   /**
    * Ensures that a user with default credentials exists.
    *
@@ -21,14 +23,14 @@ Given('User is registered', async function () {
   page = await browser.newPage();
 
   // Creating a mock user in the database
-  const mockRow = {
-      id: 1,
-      email: EMAIL,
-      username: "Test",
-      passwordHash: PASSWORD,
-      recoveryCode: "code",
-    };
-    prismaMock.user.create.mockResolvedValue(mockRow);
+  // const mockRow = {
+  //     id: 1,
+  //     email: EMAIL,
+  //     username: "Test",
+  //     passwordHash: PASSWORD,
+  //     recoveryCode: "code",
+  //   };
+  //   prismaMock.user.create.mockResolvedValue(mockRow);
 
   await page.goto("http://localhost:5173/login");
 });
@@ -48,9 +50,10 @@ When('User enters valid credentials', async function () {
    *
    * @returns {Promise<void>}
    */
+  // await page.fill('#form-login.email', EMAIL);
   await page.fill('input[id="form-login.email"]', EMAIL);
-  await page.fill('input[name="password"]', PASSWORD);
-  await page.click('button[type="submit"]');
+  await page.fill('input[id="form-login.password"]', PASSWORD);
+  await page.click('button:text("Login")');
 });
 
 Then('User should be redirected to the dashboard', async function () {
@@ -59,7 +62,7 @@ Then('User should be redirected to the dashboard', async function () {
    *
    * @returns {Promise<void>}
    */
-  await this.page.waitForURL('**/dashboard');
+  await this.page.waitForURL('**/home');
 });
 
 Given('User is logged in', async function () {
