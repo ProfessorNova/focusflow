@@ -62,7 +62,7 @@ Then('User should be redirected to the dashboard', async function () {
    *
    * @returns {Promise<void>}
    */
-  await this.page.waitForURL('**/home');
+  await page.waitForURL('**/2fa/setup');
 });
 
 Given('User is logged in', async function () {
@@ -76,8 +76,8 @@ Given('User is logged in', async function () {
       data: { username: EMAIL, password: PASSWORD }
     });
   const { token } = await response.json();
-  await this.page.addInitScript(`window.localStorage.setItem('authToken', '${token}')`);
-  await this.page.goto('http://localhost:5173/dashboard');
+  await page.addInitScript(`window.localStorage.setItem('authToken', '${token}')`);
+  await page.goto('http://localhost:5173/dashboard');
   // Option B: call the UI login steps
 });
 
@@ -88,7 +88,7 @@ When('User clicks on the {string} link', async function (linkText: string) {
    * @param linkText The exact text of the link to click.
    * @returns {Promise<void>}
    */
-  await this.page.click(`text=${linkText}`);
+  await page.click(`text=${linkText}`);
 });
 
 Then('System should load existing tasks', async function () {
@@ -97,7 +97,7 @@ Then('System should load existing tasks', async function () {
    *
    * @returns {Promise<void>}
    */
-  await this.page.waitForSelector('.task-item');
+  await page.waitForSelector('.task-item');
 });
 
 

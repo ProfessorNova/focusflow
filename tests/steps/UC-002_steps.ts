@@ -4,7 +4,7 @@ import { chromium, type Page, type Browser } from "@playwright/test";
 let browser: Browser;
 let page: Page
 
-const USERNAME = 'user1';
+const USERNAME = 'testUser';
 const PASSWORD = 'password1';
 const EMAIL = 'test@test.com';
 

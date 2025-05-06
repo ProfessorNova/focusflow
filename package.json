@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "prisma": {
+    "seed": "tsx src/lib/server/seed.ts"
+  },
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
