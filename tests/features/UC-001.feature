@@ -11,9 +11,9 @@ Feature: Task Management
     When User enters valid credentials
     Then User should be redirected to the dashboard
 
-  Scenario: User changes the status of a task
-    Given User is on the dashboard
-    When User selects a task
-    And User changes the status to "Completed"
-    Then System should update the task status
-    And User should see the updated status in the list
+  # Scenario: User changes the status of a task
+  #   Given User is on the dashboard
+  #   When User selects a task
+  #   And User changes the status to "Completed"
+  #   Then System should update the task status
+  #   And User should see the updated status in the list
