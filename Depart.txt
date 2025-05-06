@@ -1,7 +1,0 @@
-"test-cucumber": "cucumber-js --config cucumber.cjs"
-
-"test-cucumber": "vite-node --require cucumber-runner.ts cucumber-js --config cucumber.cjs"
-
-"test-cucumber": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --experimental-specifier-resolution=node -r tsconfig-paths/register\" cucumber-js --config cucumber.cjs"
-
-"test-cucumber": "vite-node test/cucumberRunner.ts"
