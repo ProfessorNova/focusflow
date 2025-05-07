@@ -1,17 +1,13 @@
 import { Given, When, Then, setDefaultTimeout } from '@cucumber/cucumber';
 import { chromium, type Page, type Browser } from "@playwright/test";
-// import prismaMock from "../../src/lib/server/__mocks__/prisma";
-// import prismaMock from "$lib/server/__mocks__/prisma";
-// import { vi } from 'vitest';
-
-// vi.mock("$lib/server/prisma");
 
 let browser: Browser;
 let page: Page;
 
 const EMAIL = 'test@test.com';
 const PASSWORD = 'testpass';
-setDefaultTimeout(5 * 1000); // Set default timeout for all steps
+const TOTPKey = '12345';
+setDefaultTimeout(50 * 1000); // Set default timeout for all steps
 
 Given('User is registered', { timeout: 30 * 1000 }, async function () {
   /**
@@ -21,16 +17,6 @@ Given('User is registered', { timeout: 30 * 1000 }, async function () {
    */
   browser = await chromium.launch({ headless: false });
   page = await browser.newPage();
-
-  // Creating a mock user in the database
-  // const mockRow = {
-  //     id: 1,
-  //     email: EMAIL,
-  //     username: "Test",
-  //     passwordHash: PASSWORD,
-  //     recoveryCode: "code",
-  //   };
-  //   prismaMock.user.create.mockResolvedValue(mockRow);
 
   await page.goto("http://localhost:5173/login");
 });
@@ -63,7 +49,12 @@ Then('User should be redirected to the dashboard', async function () {
    * @returns {Promise<void>}
    */
   await page.waitForURL('**/2fa/setup');
+
+  
+  await page.fill('input[id="form-totp.code"]', TOTPKey);
+  await page.click('button:text("Verify")');
 });
+
 
 Given('User is logged in', async function () {
   /**

@@ -22,7 +22,7 @@ const config: runtime.GetPrismaClientConfig = {
       "value": "prisma-client"
     },
     "output": {
-      "value": "C:\\Users\\flowo\\Documents\\IntelliJ\\focusflow\\src\\lib\\server\\generated\\prisma",
+      "value": "C:\\Users\\P50\\Documents\\GitHub\\focusflow\\src\\lib\\server\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -38,7 +38,7 @@ const config: runtime.GetPrismaClientConfig = {
     "previewFeatures": [
       "driverAdapters"
     ],
-    "sourceFilePath": "C:\\Users\\flowo\\Documents\\IntelliJ\\focusflow\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\P50\\Documents\\GitHub\\focusflow\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativePath": "../../../../../prisma",
@@ -48,12 +48,11 @@ const config: runtime.GetPrismaClientConfig = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": null
+        "value": "postgresql://postgres:postgres@localhost:42187/focusflow_test?schema=public"
       }
     }
   },

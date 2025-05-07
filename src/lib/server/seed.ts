@@ -1,6 +1,7 @@
 import { PrismaClient } from './generated/prisma';
 import { hash } from "@node-rs/argon2";
 import crypto from 'crypto';
+// import { encrypt } from './auth/encryption';
 
 const prisma = new PrismaClient();
 
@@ -9,6 +10,8 @@ async function main() {
   const email = 'test@test.com';
   const username = 'testUser';
   const plainPassword = 'testpass';
+  const byteArray: Uint8Array = new Uint8Array([1, 2, 3, 4, 5]);
+  // const TOTPKey = encrypt(byteArray);
 
   // Hash the password
   const passwordHash = await hash(plainPassword, {
@@ -31,6 +34,9 @@ async function main() {
       recoveryCode,
       // Optionally set TOTP key if needed:
       // totpKey: crypto.randomBytes(20),
+      // totpKey: TOTPKey,
+      totpKey: byteArray,
+      // session: 
     },
   });
 
