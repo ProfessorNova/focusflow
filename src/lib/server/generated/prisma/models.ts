@@ -7,10 +7,10 @@
  *
  * 🟢 You can import this file directly.
  */
-export type * from './models/User.js'
-export type * from './models/Team.js'
-export type * from './models/Task.js'
-export type * from './models/Session.js'
-export type * from './models/EmailVerificationRequest.js'
-export type * from './models/PasswordResetSession.js'
-export type * from './commonInputTypes.js'
+export type * from './models/User.ts'
+export type * from './models/Team.ts'
+export type * from './models/Task.ts'
+export type * from './models/Session.ts'
+export type * from './models/EmailVerificationRequest.ts'
+export type * from './models/PasswordResetSession.ts'
+export type * from './commonInputTypes.ts'

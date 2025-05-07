@@ -1,28 +1,13 @@
 import { Given, When, Then, setDefaultTimeout } from '@cucumber/cucumber';
-import { chromium, type Page, type Browser } from "@playwright/test";
 
-// let browser: Browser;
-// let page: Page;
-
-
-const EMAIL = 'test@test.com';
-const PASSWORD = 'testpass';
-const TOTPKey = '12345';
-setDefaultTimeout(10 * 1000); // Set default timeout for all steps
-
-Given('User is registered', { timeout: 30 * 1000 }, async function () {
+Given('User is registered'/*, { timeout: 30 * 1000 }*/, async function () {
   /**
    * Ensures that a user with default credentials exists.
    *
    * @returns {Promise<void>}
    */
 
-  console.log('User is registered with default credentials:', EMAIL, PASSWORD);
-
-  // this.browser = await chromium.launch({ headless: false });
-  // this.page = await browser.newPage();
-
-  // await page.goto("http://localhost:5173/login");
+  
 });
 
 Given('User is on the login page', async function () {
@@ -31,6 +16,7 @@ Given('User is on the login page', async function () {
    *
    * @returns {Promise<void>}
    */
+  await this.page.waitForLoadState();
   await this.page.goto('http://localhost:5173/login', { waitUntil: 'load' });
 });
 
@@ -41,8 +27,8 @@ When('User enters valid credentials', async function () {
    * @returns {Promise<void>}
    */
   await this.page.waitForLoadState();
-  await this.page.fill('input[id="form-login.email"]', EMAIL);
-  await this.page.fill('input[id="form-login.password"]', PASSWORD);
+  await this.page.fill('input[id="form-login.email"]', this.EMAIL);
+  await this.page.fill('input[id="form-login.password"]', this.PASSWORD);
   await this.page.click('button:text("Login")');
 });
 
@@ -57,7 +43,7 @@ Then('User should be redirected to the dashboard', async function () {
     .catch(() => false)     // If it fails to find the URL, it will return false
     .then(async () => {
       // Otherwise, it will return true and go to the 2fa page
-      await this.page.fill('input[id="form-totp.code"]', TOTPKey);
+      await this.page.fill('input[id="form-totp.code"]', this.TOTPKey);
       await this.page.click('button:text("Verify")');
       return true;
     });
@@ -79,7 +65,7 @@ Given('User is logged in', async function () {
    */
     // Option A: Use API to obtain auth cookie/token, then set on page
   const response = await this.request.post('/api/login', {
-      data: { username: EMAIL, password: PASSWORD }
+      data: { username: this.EMAIL, password: this.PASSWORD }
     });
   const { token } = await response.json();
   await this.page.addInitScript(`window.localStorage.setItem('authToken', '${token}')`);

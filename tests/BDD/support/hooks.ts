@@ -16,7 +16,7 @@ BeforeAll(async function() {
   const pgBin = 'C:\\Program Files\\PostgreSQL\\16\\bin';     // Adjust this path to your PostgreSQL bin directory
   process.env.PATH = `${pgBin};${process.env.PATH}`;
 
-  // 'inherit' stdio pipes the output of the commands to the parent process
+  // 'stdio: inherit' pipes the output of the commands to the parent process
   // 'shell: true' allows the command to be run in the parent shell, which is necessary for some commands
   let result = spawnSync('createdb', [testDbName], { stdio: 'inherit', env: process.env });
   console.log(result.status == 0 ? "Database created successfully" : (result.error ?? result.status));
@@ -27,12 +27,14 @@ BeforeAll(async function() {
 
   console.log('Starting SvelteKit server...');
   // Start SvelteKit dev on port 5173 (default)
-  viteServer = spawn('npm', ['run', 'dev'], { stdio: 'inherit', shell: true, env: process.env });
+  viteServer = spawn('npm', ['run', 'dev'], { shell: true, env: process.env });
+
   // Wait a few seconds or poll until the server is ready
   await new Promise(res => setTimeout(res, 30 * 1000));
 });
 
 AfterAll(function() {
+  // return;
   console.log('Stopping SvelteKit server...');
   // Kill the server when done
   viteServer.kill();

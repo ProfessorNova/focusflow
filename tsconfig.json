@@ -12,7 +12,8 @@
     "module": "ESNext",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
   },
   // Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
   // except $lib which is handled by https://svelte.dev/docs/kit/configuration#files
