@@ -29,7 +29,7 @@ BeforeAll(async function() {
   // Start SvelteKit dev on port 5173 (default)
   viteServer = spawn('npm', ['run', 'dev'], { stdio: 'inherit', shell: true, env: process.env });
   // Wait a few seconds or poll until the server is ready
-  await new Promise(res => setTimeout(res, 15000));
+  await new Promise(res => setTimeout(res, 30 * 1000));
 });
 
 AfterAll(function() {

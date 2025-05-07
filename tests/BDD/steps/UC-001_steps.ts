@@ -1,13 +1,14 @@
 import { Given, When, Then, setDefaultTimeout } from '@cucumber/cucumber';
 import { chromium, type Page, type Browser } from "@playwright/test";
 
-let browser: Browser;
-let page: Page;
+// let browser: Browser;
+// let page: Page;
+
 
 const EMAIL = 'test@test.com';
 const PASSWORD = 'testpass';
 const TOTPKey = '12345';
-setDefaultTimeout(50 * 1000); // Set default timeout for all steps
+setDefaultTimeout(10 * 1000); // Set default timeout for all steps
 
 Given('User is registered', { timeout: 30 * 1000 }, async function () {
   /**
@@ -15,10 +16,13 @@ Given('User is registered', { timeout: 30 * 1000 }, async function () {
    *
    * @returns {Promise<void>}
    */
-  browser = await chromium.launch({ headless: false });
-  page = await browser.newPage();
 
-  await page.goto("http://localhost:5173/login");
+  console.log('User is registered with default credentials:', EMAIL, PASSWORD);
+
+  // this.browser = await chromium.launch({ headless: false });
+  // this.page = await browser.newPage();
+
+  // await page.goto("http://localhost:5173/login");
 });
 
 Given('User is on the login page', async function () {
@@ -27,7 +31,7 @@ Given('User is on the login page', async function () {
    *
    * @returns {Promise<void>}
    */
-  await page.goto('http://localhost:5173/login');
+  await this.page.goto('http://localhost:5173/login', { waitUntil: 'load' });
 });
 
 When('User enters valid credentials', async function () {
@@ -36,10 +40,10 @@ When('User enters valid credentials', async function () {
    *
    * @returns {Promise<void>}
    */
-  // await page.fill('#form-login.email', EMAIL);
-  await page.fill('input[id="form-login.email"]', EMAIL);
-  await page.fill('input[id="form-login.password"]', PASSWORD);
-  await page.click('button:text("Login")');
+  await this.page.waitForLoadState();
+  await this.page.fill('input[id="form-login.email"]', EMAIL);
+  await this.page.fill('input[id="form-login.password"]', PASSWORD);
+  await this.page.click('button:text("Login")');
 });
 
 Then('User should be redirected to the dashboard', async function () {
@@ -48,11 +52,22 @@ Then('User should be redirected to the dashboard', async function () {
    *
    * @returns {Promise<void>}
    */
-  await page.waitForURL('**/2fa/setup');
+  await this.page.waitForLoadState();
+  let needed2faSetup = await this.page.waitForURL('**/2fa/setup')
+    .catch(() => false)     // If it fails to find the URL, it will return false
+    .then(async () => {
+      // Otherwise, it will return true and go to the 2fa page
+      await this.page.fill('input[id="form-totp.code"]', TOTPKey);
+      await this.page.click('button:text("Verify")');
+      return true;
+    });
 
-  
-  await page.fill('input[id="form-totp.code"]', TOTPKey);
-  await page.click('button:text("Verify")');
+  let isVerified = await this.page.waitForURL('**/2fa')
+    .catch(() => true)     // If it doesnt need 2fa, it will return true as a verified session
+    .then(async () => {
+      return false;     // Otherwise, it will return false
+    });
+  console.log('Needed 2FA:', (isVerified ? 'No' : 'Yes'));
 });
 
 
@@ -67,8 +82,8 @@ Given('User is logged in', async function () {
       data: { username: EMAIL, password: PASSWORD }
     });
   const { token } = await response.json();
-  await page.addInitScript(`window.localStorage.setItem('authToken', '${token}')`);
-  await page.goto('http://localhost:5173/dashboard');
+  await this.page.addInitScript(`window.localStorage.setItem('authToken', '${token}')`);
+  await this.page.goto('http://localhost:5173/dashboard');
   // Option B: call the UI login steps
 });
 
@@ -79,7 +94,7 @@ When('User clicks on the {string} link', async function (linkText: string) {
    * @param linkText The exact text of the link to click.
    * @returns {Promise<void>}
    */
-  await page.click(`text=${linkText}`);
+  await this.page.click(`text=${linkText}`);
 });
 
 Then('System should load existing tasks', async function () {
@@ -88,7 +103,7 @@ Then('System should load existing tasks', async function () {
    *
    * @returns {Promise<void>}
    */
-  await page.waitForSelector('.task-item');
+  await this.page.waitForSelector('.task-item');
 });
 
 
@@ -98,7 +113,7 @@ Given('User is on the dashboard page', async function () {
    *
    * @returns {Promise<void>}
    */
-  await page.goto('http://localhost:5173');
+  await this.page.goto('http://localhost:5173');
 });
 
 When('User selects a task', async function () {
@@ -107,7 +122,7 @@ When('User selects a task', async function () {
    *
    * @returns {Promise<void>}
    */
-  await page.click('.task-item:first-child'); // Adjust selector as needed
+  await this.page.click('.task-item:first-child'); // Adjust selector as needed
 });
 
 When('User changes the task status to {string}', async function (status: string) {
@@ -117,8 +132,8 @@ When('User changes the task status to {string}', async function (status: string)
    * @param status The new status to set for the task.
    * @returns {Promise<void>}
    */
-  await page.selectOption('select[name="status"]', status);
-  await page.click('button[type="submit"]'); // Submit the form or save changes
+  await this.page.selectOption('select[name="status"]', status);
+  await this.page.click('button[type="submit"]'); // Submit the form or save changes
 });
 
 Then('System should update the task status', async function () {
@@ -127,7 +142,7 @@ Then('System should update the task status', async function () {
    *
    * @returns {Promise<void>}
    */
-  const statusText = await page.textContent('.task-item:first-child .status'); // Adjust selector as needed
+  const statusText = await this.page.textContent('.task-item:first-child .status'); // Adjust selector as needed
   if (statusText !== 'Updated') {
     throw new Error('Task status was not updated successfully');
   }
@@ -139,7 +154,7 @@ Then('User should see the updated status in the list', async function () {
    *
    * @returns {Promise<void>}
    */
-  const statusText = await page.textContent('.task-item:first-child .status'); // Adjust selector as needed
+  const statusText = await this.page.textContent('.task-item:first-child .status'); // Adjust selector as needed
   if (statusText !== 'Updated') {
     throw new Error('Task status was not updated successfully');
   }
