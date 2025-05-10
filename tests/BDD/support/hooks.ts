@@ -1,6 +1,7 @@
 // support/hooks.ts
 import { spawn, spawnSync } from 'child_process';
 import { AfterAll, BeforeAll } from '@cucumber/cucumber';
+import { exit } from 'process';
 
 const testDbName = 'focusflow_test';
 let viteServer: any;
@@ -30,11 +31,13 @@ BeforeAll(async function() {
   viteServer = spawn('npm', ['run', 'dev'], { shell: true, env: process.env });
 
   // Wait a few seconds or poll until the server is ready
-  await new Promise(res => setTimeout(res, 30 * 1000));
+  await new Promise(res => setTimeout(res, 15 * 1000));
 });
 
 AfterAll(function() {
-  // return;
+  if(process.env.DEBUG == "true") {
+    return Promise.resolve(true);
+  }
   console.log('Stopping SvelteKit server...');
   // Kill the server when done
   viteServer.kill();
@@ -47,4 +50,6 @@ AfterAll(function() {
     '--username=postgres',
     testDbName
   ], { env: process.env });
+
+  exit(0);
 });

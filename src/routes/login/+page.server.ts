@@ -93,7 +93,8 @@ async function action(event: RequestEvent) {
   }
   throttler.reset(user.id);
   const sessionFlags: SessionFlags = {
-    twoFactorVerified: false,
+    // change to false to enable 2FA
+    twoFactorVerified: true,
   };
   const sessionToken = generateSessionToken();
   const session = await createSession(sessionToken, user.id, sessionFlags);

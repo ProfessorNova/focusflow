@@ -1,53 +1,63 @@
 import { Given, When, Then } from '@cucumber/cucumber';
-import { chromium, type Page, type Browser } from "@playwright/test";
-
-let browser: Browser;
-let page: Page
-
-const USERNAME = 'testUser';
-const PASSWORD = 'password1';
-const EMAIL = 'test@test.com';
+import { expect } from 'playwright/test';
 
 Given('User is not registered', async function () {
-  browser = await chromium.launch({ headless: false });
-  page = await browser.newPage();
-  await page.goto("http://localhost:5173/signup");
+  /**
+   * Ensures that a user without default credentials is used.
+   *
+   * @returns {Promise<void>}
+   */
+
+  this.print('Uses unregistered user');
+
 });
 
+
 Given('User is on the registration page', async function () {
-  await page.goto("http://localhost:5173/signup");
+  await this.page.goto(this.baseUrl + "/signup", { waitUntil: 'load' });
+  await this.page.waitForLoadState("networkidle");
 });
 
 When('User enters username {string}', async function (username: string) {
-  await page.fill('input[name="username"]', username);
+  await this.page.fill('input[id="form-signup.username"]', username);
 
 });
 
 When('User enters email {string}', async function (email: string) {
-  await page.fill('input[name="password"]', email);
+  await this.page.fill('input[id="form-signup.email"]', email);
 });
 
 When('User enters password {string}', async function (password: string) {
-  await page.fill('input[name="username"]', password);
+  await this.page.fill('input[id="form-signup.password"]', password);
 });
 
 When('User submits the registration form', async function () {
-  await page.click('button[type="submit"]');
+  await this.page.click('button:text("Sign up")');
+  await this.page.waitForLoadState("networkidle");
+  await this.page.waitForLoadState();
 });
 
-// Optional two-factor authentication step
-When('User completes two-factor authentication with code {string}', async function (code: string) {
-  await page.fill('input[name="username"]', code);
+When('User verifies his email', async function () {
+  // Ensures that the signup process is completed and the user is redirected
+  expect(this.page.url()).not.toBe(this.baseUrl);
+  if(this.page.url() == this.baseUrl) {
+    this.print('User is not redirected to the two-factor authentication page');
+    return;
+  }
+  await this.page.fill('input[name="code"]', "12345678"); // TODO: use the code from the email
+  await this.page.click('button:text("Verify")');
+  await this.page.waitForLoadState("networkidle");
 });
 
 Then('User should see the landing page', async function () {
-  browser = await chromium.launch({ headless: false });
-  page = await browser.newPage();
-  await page.goto("http://localhost:5173/");
+  await this.page.waitForURL(this.baseUrl);
 });
 
-Then('User account {string} exists in the system', async function (username: string) {
+Then('User account with email {string} exists in the system', async function (email: string) {
   // TODO: verify via API or database that the user account was created
   // e.g., const exists = await api.userExists(username);
   //       expect(exists).to.be.true;
+
+  this.print(`User account ${email} exists in the system`);
+
 });

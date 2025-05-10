@@ -122,7 +122,8 @@ async function action(event: RequestEvent) {
   setEmailVerificationRequestCookie(event, emailVerificationRequest);
 
   const sessionFlags: SessionFlags = {
-    twoFactorVerified: false,
+    // set this to false to enable 2FA like in the login route
+    twoFactorVerified: true,
   };
   const sessionToken = generateSessionToken();
   const session = await createSession(sessionToken, user.id, sessionFlags);

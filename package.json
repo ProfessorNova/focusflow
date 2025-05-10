@@ -14,7 +14,8 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "test": "vitest",
-    "test-cucumber": "cucumber-js --config cucumber.cjs"
+    "test-cucumber": "cross-env DEBUG=false cucumber-js --config cucumber.cjs",
+    "debug-cucumber": "cross-env DEBUG=true cucumber-js --config cucumber.cjs"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^11.2.0",

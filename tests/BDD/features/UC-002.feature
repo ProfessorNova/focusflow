@@ -4,17 +4,17 @@ Feature: User Registration
 
   Background:
     Given User is not registered
-    And User is on the registration page
 
   Scenario Outline: User registers successfully
+    Given User is on the registration page
     When User enters username "<username>"
     And User enters email "<email>"
     And User enters password "<password>"
     And User submits the registration form
-    And User completes two-factor authentication with code "<code>"
+    And User verifies his email
     Then User should see the landing page
-    And User account "<username>" exists in the system
+    And User account with email "<email>" exists in the system
 
     Examples:
-      | username | email          | password   | code   |
-      | user1    | test@test.com  | password1  | 123456 |
+      | username | email                 | password          |
+      | user1    | unregistered@test.com | 0neStrongP@ssword |

@@ -48,7 +48,7 @@
 </script>
 
 <div class="dropdown dropdown-bottom">
-  <div tabindex="0" role="button" class="btn m-1">
+  <div tabindex="0" role="button" class="btn m-1" title="{status}">
     {#if status === "Open"}
       <Circle />
     {:else if status === "Pending"}
