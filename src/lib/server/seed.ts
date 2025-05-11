@@ -28,6 +28,7 @@ async function main() {
       emailVerified: true,
       recoveryCode,
       totpKey: byteArray,
+      // registered2FA: true,
     },
   });
 

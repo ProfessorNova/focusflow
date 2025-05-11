@@ -4,7 +4,6 @@
 
   let { statusChanged = $bindable(), ...props } = $props();
 
-  // const CHANGED: boolean = true;
   let taskId: number = props.taskId;
   let status: string = $state("");
   let oldStatus: string = $state("");
@@ -23,21 +22,22 @@
   });
 
   async function updateTask(): Promise<void> {
+    if(oldStatus == status) {
+      return;
+    } else {
+      statusChanged = true;
+      oldStatus = status;
+    }
     try {
-      // let changed: boolean = hasChanges ? CHANGED : !CHANGED;
       const res = await fetch(`/api/tasks/${taskId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ status })
-        // body: JSON.stringify({ status, changed })
       });
       if (res.ok) {
-        if (oldStatus != status) {
-          // statusChanged = changed;
-          oldStatus = status;
-        }
+        statusChanged = false;
       } else {
         console.error("Failed to update task.");
       }

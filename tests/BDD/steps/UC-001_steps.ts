@@ -36,7 +36,7 @@ When('User enters valid credentials', async function () {
   await this.page.click('button:text("Login")');
   // Wait a little time to process the click event
   await this.page.waitForLoadState("networkidle");
-  this.page.waitForTimeout(5 * 1000);
+  await this.page.waitForTimeout(5 * 1000);
 });
 
 Then('User should be redirected to the dashboard', async function () {

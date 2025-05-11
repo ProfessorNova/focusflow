@@ -1,8 +1,11 @@
 // support/world.ts
-import { After, Before, setDefaultTimeout, setWorldConstructor, World } from '@cucumber/cucumber';
+import { After, Before, setDefaultTimeout, setWorldConstructor, World, type IWorldOptions } from '@cucumber/cucumber';
 import { chromium, type Browser, type BrowserContext, type Page } from 'playwright/test';
+import { Client as PgClient } from 'pg';
 
-class CustomWorld extends World {
+export const testDbName = 'focusflow_test';
+export class CustomWorld extends World {
+  DBClient!: PgClient;
   browser!: Browser | null;
   context!: BrowserContext | null;
   page!: Page | null;
@@ -14,11 +17,25 @@ class CustomWorld extends World {
   PASSWORD = 'testpass';
   TOTPKey = '12345';
 
-  constructor(options: any) {
+  constructor(options: IWorldOptions) {
     super(options);
     this.browser = null;
     this.context = null;
     this.page = null;
+    console.log('Initializing database client...');
+    try {
+        // Initialize the database client
+        this.DBClient = new PgClient({
+            host: 'localhost',
+            port: 42187,
+            user: 'postgres',
+            password: 'postgres',
+            database: testDbName
+        });
+        this.DBClient.connect();
+    } catch (error) {
+        console.error('Error initializing database client:', error);
+    }
   }
 
   async init() {
@@ -37,15 +54,38 @@ class CustomWorld extends World {
   }
   async close() {
     console.log('Closing the playwright environment...');
-    await this.page?.close();
-    await this.context?.close();
-    await this.browser?.close();
+    // Closing the browser unfortunately causes errors in the after hook
+    // await this.page?.close();
+    // await this.context?.close();
+    // await this.browser?.close();
   }
   print(message: String) {
     if (this.debug) {
       console.log(message);
     }
   }
+
+  async getEmailVerificationCode(email: string): Promise<string | null> {
+    if (!this.DBClient) {
+      throw new Error('Database client is not initialized');
+    }
+    try {
+      const res = await this.DBClient.query(
+        'SELECT code FROM public."EmailVerificationRequest" WHERE "email" = $1',
+        [email]
+      );
+
+      if (res.rows.length > 0) {
+        return res.rows[0].code;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching email verification code:', error);
+      return null;
+    }
+  }
+
 }
 setWorldConstructor(CustomWorld);
 setDefaultTimeout(50 * 1000); // Set default timeout for all steps

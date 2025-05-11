@@ -11,7 +11,7 @@ Feature: User Registration
     And User enters email "<email>"
     And User enters password "<password>"
     And User submits the registration form
-    And User verifies his email
+    And User verifies his email "<email>"
     Then User should see the landing page
     And User account with email "<email>" exists in the system
 

@@ -8,13 +8,15 @@ Given('User is not registered', async function () {
    * @returns {Promise<void>}
    */
 
+  await this.page.waitForLoadState();
+  await this.page.waitForLoadState("networkidle");
   this.print('Uses unregistered user');
 
 });
 
 
 Given('User is on the registration page', async function () {
-  await this.page.goto(this.baseUrl + "/signup", { waitUntil: 'load' });
+  await this.page.goto(this.baseUrl + "/signup", { waitUntil: 'load', timeout: 50 * 1000 });
   await this.page.waitForLoadState("networkidle");
 });
 
@@ -35,18 +37,26 @@ When('User submits the registration form', async function () {
   await this.page.click('button:text("Sign up")');
   await this.page.waitForLoadState("networkidle");
   await this.page.waitForLoadState();
+  await this.page.waitForTimeout(5 * 1000);
 });
 
-When('User verifies his email', async function () {
+When('User verifies his email {string}', async function (email: string) {
   // Ensures that the signup process is completed and the user is redirected
   expect(this.page.url()).not.toBe(this.baseUrl);
   if(this.page.url() == this.baseUrl) {
-    this.print('User is not redirected to the two-factor authentication page');
+    this.print('User is not redirected to the email verification page');
     return;
   }
-  await this.page.fill('input[name="code"]', "12345678"); // TODO: use the code from the email
+  await this.page.waitForLoadState();
+  await this.page.waitForLoadState("networkidle");
+
+  const code = await this.getEmailVerificationCode(email);
+  this.print(`Email verification code: ${code}`);
+  await this.page.fill('input[name="code"]', code);
   await this.page.click('button:text("Verify")');
   await this.page.waitForLoadState("networkidle");
+
+  
 });
 
 Then('User should see the landing page', async function () {

@@ -3,7 +3,7 @@ import { spawn, spawnSync } from 'child_process';
 import { AfterAll, BeforeAll } from '@cucumber/cucumber';
 import { exit } from 'process';
 
-const testDbName = 'focusflow_test';
+export const testDbName = 'focusflow_test';
 let viteServer: any;
 
 BeforeAll(async function() {
@@ -51,5 +51,5 @@ AfterAll(function() {
     testDbName
   ], { env: process.env });
 
-  exit(0);
+  // exit();
 });
