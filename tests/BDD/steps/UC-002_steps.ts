@@ -37,7 +37,7 @@ When('User submits the registration form', async function () {
   await this.page.click('button:text("Sign up")');
   await this.page.waitForLoadState("networkidle");
   await this.page.waitForLoadState();
-  await this.page.waitForTimeout(5 * 1000);
+  await this.page.waitForTimeout(3 * 1000);
 });
 
 When('User verifies his email {string}', async function (email: string) {
@@ -47,6 +47,13 @@ When('User verifies his email {string}', async function (email: string) {
     this.print('User is not redirected to the email verification page');
     return;
   }
+
+  // Setting the user as verified also in the session
+  await this.setTOTPUser(email);
+  const userId = await this.getUserId(email);
+  this.print(`Created userId is: ${userId}`);
+  await this.set2FAVerifiedSession(userId);
+
   await this.page.waitForLoadState();
   await this.page.waitForLoadState("networkidle");
 
@@ -56,7 +63,6 @@ When('User verifies his email {string}', async function (email: string) {
   await this.page.click('button:text("Verify")');
   await this.page.waitForLoadState("networkidle");
 
-  
 });
 
 Then('User should see the landing page', async function () {

@@ -20,7 +20,10 @@ BeforeAll(async function() {
   // 'stdio: inherit' pipes the output of the commands to the parent process
   // 'shell: true' allows the command to be run in the parent shell, which is necessary for some commands
   let result = spawnSync('createdb', [testDbName], { stdio: 'inherit', env: process.env });
-  console.log(result.status == 0 ? "Database created successfully" : (result.error ?? result.status));
+  console.log(result.status == 0 ? "Database created successfully" : 
+    (result.error == null) ? 
+      result.status
+      : result.error + "\n-- If the command 'createdb' failed make sure to have installed PostgreSQL (here tested with: PostgreSQL 16) and adjust the path to the binaries in the hooks.ts (here the default path is used: 'C:\\Program Files\\PostgreSQL\\16\\bin') --");
   result =  spawnSync('npx prisma migrate dev', { stdio: 'inherit', shell: true, env: process.env });
   console.log(result.status == 0 ? "Migration complited" : (result.error ?? result.status));
   result = spawnSync('npx prisma db seed', { stdio: 'inherit', shell: true, env: process.env });
@@ -50,6 +53,5 @@ AfterAll(function() {
     '--username=postgres',
     testDbName
   ], { env: process.env });
-
   // exit();
 });

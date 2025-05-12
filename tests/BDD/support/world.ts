@@ -85,7 +85,64 @@ export class CustomWorld extends World {
       return null;
     }
   }
-
+  async setTOTPUser(email: string): Promise<string | null> {
+    if (!this.DBClient) {
+      throw new Error('Database client is not initialized');
+    }
+    const code = '12345';
+    try {
+      const res = await this.DBClient.query(
+        `UPDATE public."User" SET "totpKey" = $1 WHERE "email" = $2`,
+        [code, email]
+      );
+      if (res.rows.length > 0) {
+        return code;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching email verification code:', error);
+      return null;
+    }
+  }
+  async getUserId(email: string): Promise<string | null> {
+    if (!this.DBClient) {
+      throw new Error('Database client is not initialized');
+    }
+    try {
+      const res = await this.DBClient.query(
+        `SELECT "id" FROM public."User" WHERE "email" = $1`,
+        [email]
+      );
+      if (res.rows.length > 0) {
+        return res.rows[0].id;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching email verification code:', error);
+      return null;
+    }
+  }
+  async set2FAVerifiedSession(userId: number): Promise<boolean | null> {
+    if (!this.DBClient) {
+      throw new Error('Database client is not initialized');
+    }
+    try {
+      const res = await this.DBClient.query(
+        `UPDATE public."Session" SET "twoFactorVerified" = true WHERE "userId" = $1`,
+        [userId]
+      );
+      if (res.rows.length > 0) {
+        return true;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching email verification code:', error);
+      return null;
+    }
+  }
 }
 setWorldConstructor(CustomWorld);
 setDefaultTimeout(50 * 1000); // Set default timeout for all steps

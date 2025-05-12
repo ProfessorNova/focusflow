@@ -22,7 +22,7 @@ const config: runtime.GetPrismaClientConfig = {
       "value": "prisma-client"
     },
     "output": {
-      "value": "C:\\Users\\P50\\Documents\\GitHub\\focusflow\\src\\lib\\server\\generated\\prisma",
+      "value": "D:\\olbap\\Dokumente_Eig\\Workspace\\GitHub\\focusflow\\src\\lib\\server\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -38,7 +38,7 @@ const config: runtime.GetPrismaClientConfig = {
     "previewFeatures": [
       "driverAdapters"
     ],
-    "sourceFilePath": "C:\\Users\\P50\\Documents\\GitHub\\focusflow\\prisma\\schema.prisma",
+    "sourceFilePath": "D:\\olbap\\Dokumente_Eig\\Workspace\\GitHub\\focusflow\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativePath": "../../../../../prisma",
