@@ -5,49 +5,25 @@ on:
   pull_request:
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+    test:
+      runs-on: ubuntu-latest
 
-    services:
-      docker:
-        image: docker:20.10.16-dind
-        privileged: true
-        ports:
-          - 2375:2375
-        env:
-          DOCKER_TLS_CERTDIR: ""
-        command: ["--host=tcp://0.0.0.0:2375", "--storage-driver=overlay2"]
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
 
-    env:
-      DOCKER_HOST: tcp://localhost:2375
-      DOCKER_TLS_VERIFY: "0"
-      TESTCONTAINERS_RYUK_DISABLED: "true"
+        - name: Write .env file
+          run: echo DATABASE_URL="${{ secrets.DATABASE_URL }}" > .env && echo ENCRYPTION_KEY="${{ secrets.ENCRYPTION_KEY }}" >> .env
 
-    steps:
-      - uses: actions/checkout@v4
+        - name: Set up Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: lts/*
+            cache: 'npm'
+            cache-dependency-path: package-lock.json
 
-      - name: Wait for Docker daemon
-        run: |
-          timeout 1m bash -c "until docker info >/dev/null 2>&1; do sleep 1; done"
+        - name: Install dependencies
+          run: npm ci
 
-      - name: Write .env file
-        run: |
-          echo DATABASE_URL="${{ secrets.DATABASE_URL }}" > .env
-          echo ENCRYPTION_KEY="${{ secrets.ENCRYPTION_KEY }}" >> .env
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: npm
-          cache-dependency-path: package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Generate Prisma client & apply migrations
-        run: |
-          npx prisma generate
-          npx prisma migrate deploy
-
-      - name: Run tests
-        run: npm test
+        - name: Run tests
+          run: npm test
