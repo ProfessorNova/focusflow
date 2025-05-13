@@ -1,3 +1,4 @@
+# .github/workflows/ci.yml
 name: Continuous Integration
 
 on:
@@ -5,25 +6,52 @@ on:
   pull_request:
 
 jobs:
-    test:
-      runs-on: ubuntu-latest
+  test:
+    runs-on: ubuntu-latest
 
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
+    services:
+      docker:
+        image: docker:20.10.16-dind
+        options: >-
+          --privileged
+          --entrypoint="" 
+        ports:
+          - 2375:2375
 
-        - name: Write .env file
-          run: echo DATABASE_URL="${{ secrets.DATABASE_URL }}" > .env && echo ENCRYPTION_KEY="${{ secrets.ENCRYPTION_KEY }}" >> .env
+    env:
+      # point Docker CLI & Testcontainers at the DinD daemon:
+      DOCKER_HOST: tcp://localhost:2375
+      DOCKER_TLS_VERIFY: "0"
+      # disable Ryuk (speeds up startup; OK in CI)
+      TESTCONTAINERS_RYUK_DISABLED: "true"
 
-        - name: Set up Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: lts/*
-            cache: 'npm'
-            cache-dependency-path: package-lock.json
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        - name: Install dependencies
-          run: npm ci
+      - name: Wait for Docker daemon
+        run: |
+          timeout 1m bash -c "until docker info >/dev/null 2>&1; do sleep 1; done"
 
-        - name: Run tests
-          run: npm test
+      - name: Write .env file
+        run: |
+          echo DATABASE_URL="${{ secrets.DATABASE_URL }}" > .env
+          echo ENCRYPTION_KEY="${{ secrets.ENCRYPTION_KEY }}" >> .env
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client & apply migrations
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+
+      - name: Run tests
+        run: npm test
