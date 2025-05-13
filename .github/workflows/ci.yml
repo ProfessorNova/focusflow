@@ -5,39 +5,46 @@ on:
   pull_request:
 
 jobs:
-    test:
-      runs-on: ubuntu-latest
-      services:
-        docker:
-          image: docker:dind
-          options: --privileged --shm-size=2g
-          ports:
-            - 2375:2375
-            
-      env:
-        DOCKER_HOST: tcp://localhost:2375
-        DOCKER_TLS_CERTDIR: ""
+  test:
+    runs-on: ubuntu-latest
 
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
+    services:
+      docker:
+        image: docker:dind
+        options: --privileged
+        ports:
+          - 2375:2375
+        command:
+          - --host=tcp://0.0.0.0:2375
+          - --host=unix:///var/run/docker.sock
+          - --tls=false
 
-        - name: Wait for Docker
-          run: |
-            timeout 30 sh -c "until docker info; do sleep 1; done"
-        
-        - name: Write .env file
-          run: echo DATABASE_URL="${{ secrets.DATABASE_URL }}" > .env && echo ENCRYPTION_KEY="${{ secrets.ENCRYPTION_KEY }}" >> .env
+    env:
+      DOCKER_HOST: tcp://localhost:2375
+      DOCKER_TLS_CERTDIR: ""
 
-        - name: Set up Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: lts/*
-            cache: 'npm'
-            cache-dependency-path: package-lock.json
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        - name: Install dependencies
-          run: npm ci
+      - name: Wait for Docker to be ready
+        run: |
+          timeout 30 sh -c "until docker info; do sleep 1; done"
 
-        - name: Run tests
-          run: npm test
+      - name: Write .env file
+        run: |
+          echo DATABASE_URL="${{ secrets.DATABASE_URL }}" > .env
+          echo ENCRYPTION_KEY="${{ secrets.ENCRYPTION_KEY }}" >> .env
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
