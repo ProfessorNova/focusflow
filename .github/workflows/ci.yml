@@ -16,12 +16,12 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v4
 
-        -name: Install Docker client
+        - name: Install Docker client
           run: |
             sudo apt-get update
             sudo apt-get install -y docker.io
         
-        -name: Start Docker daemon
+        - name: Start Docker daemon
           run: |
             sudo dockerd --host=unix:///var/run/docker.sock \
                          --host=tcp://0.0.0.0:2375 &> dockerd.log &
