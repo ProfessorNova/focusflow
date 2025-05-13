@@ -5,42 +5,25 @@ on:
   pull_request:
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+    test:
+      runs-on: ubuntu-latest
 
-    services:
-      docker:
-        image: docker:dind
-        options: --privileged
-        ports:
-          - 2375:2375
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
 
-    env:
-      DOCKER_HOST: tcp://localhost:2375
-      DOCKER_TLS_CERTDIR: ""
+        - name: Write .env file
+          run: echo DATABASE_URL="${{ secrets.DATABASE_URL }}" > .env && echo ENCRYPTION_KEY="${{ secrets.ENCRYPTION_KEY }}" >> .env
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+        - name: Set up Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: lts/*
+            cache: 'npm'
+            cache-dependency-path: package-lock.json
 
-      - name: Wait for Docker to be ready
-        run: |
-          timeout 30 sh -c "until docker info; do sleep 1; done"
+        - name: Install dependencies
+          run: npm ci
 
-      - name: Write .env file
-        run: |
-          echo DATABASE_URL="${{ secrets.DATABASE_URL }}" > .env
-          echo ENCRYPTION_KEY="${{ secrets.ENCRYPTION_KEY }}" >> .env
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm test
+        - name: Run tests
+          run: npm test
