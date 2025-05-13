@@ -9,7 +9,7 @@ jobs:
       runs-on: ubuntu-latest
       services:
         docker:
-          image: docker:dind:24.0
+          image: docker:dind
           options: --privileged --shm-size=2g
       env:
         DOCKER_HOST: tcp://localhost:2375
