@@ -15,8 +15,6 @@ jobs:
         ports:
           - 2375:2375
         command:
-          - --host=tcp://0.0.0.0:2375
-          - --host=unix:///var/run/docker.sock
           - --tls=false
 
     env:
