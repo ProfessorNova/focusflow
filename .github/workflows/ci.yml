@@ -14,8 +14,6 @@ jobs:
         options: --privileged
         ports:
           - 2375:2375
-        command:
-          - --tls=false
 
     env:
       DOCKER_HOST: tcp://localhost:2375
