@@ -7,10 +7,25 @@ on:
 jobs:
     test:
       runs-on: ubuntu-latest
+      services:
+        docker:
+          image: docker:dind
+          options: --privileged --shm-size=2g
 
       steps:
         - name: Checkout code
           uses: actions/checkout@v4
+
+        -name: Install Docker client
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y docker.io
+        
+        -name: Start Docker daemon
+          run: |
+            sudo dockerd --host=unix:///var/run/docker.sock \
+                         --host=tcp://0.0.0.0:2375 &> dockerd.log &
+            timeout 30 sh -c "until docker info; do sleep 1; done"
 
         - name: Write .env file
           run: echo DATABASE_URL="${{ secrets.DATABASE_URL }}" > .env && echo ENCRYPTION_KEY="${{ secrets.ENCRYPTION_KEY }}" >> .env
