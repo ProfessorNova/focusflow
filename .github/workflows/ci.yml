@@ -1,4 +1,3 @@
-# .github/workflows/ci.yml
 name: Continuous Integration
 
 on:
@@ -12,22 +11,20 @@ jobs:
     services:
       docker:
         image: docker:20.10.16-dind
-        options: >-
-          --privileged
-          --entrypoint="" 
+        privileged: true
         ports:
           - 2375:2375
+        env:
+          DOCKER_TLS_CERTDIR: ""
+        command: ["--host=tcp://0.0.0.0:2375", "--storage-driver=overlay2"]
 
     env:
-      # point Docker CLI & Testcontainers at the DinD daemon:
       DOCKER_HOST: tcp://localhost:2375
       DOCKER_TLS_VERIFY: "0"
-      # disable Ryuk (speeds up startup; OK in CI)
       TESTCONTAINERS_RYUK_DISABLED: "true"
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Wait for Docker daemon
         run: |
@@ -38,8 +35,7 @@ jobs:
           echo DATABASE_URL="${{ secrets.DATABASE_URL }}" > .env
           echo ENCRYPTION_KEY="${{ secrets.ENCRYPTION_KEY }}" >> .env
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: npm
