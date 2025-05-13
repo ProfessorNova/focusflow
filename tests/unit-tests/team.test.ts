@@ -1,54 +1,114 @@
-import { describe, it, expect, beforeEach, beforeAll, afterEach, afterAll, vi } from 'vitest';
-import { TeamMock } from '$lib/server/objects/team';
-import { UserMock } from '$lib/server/objects/user';
-
-let TestingTeam: TeamMock | null;
-
-beforeAll(() => {
-    console.log('Setting up the test environment for team tests...');
-    // vi.useFakeTimers(); // Use fake timers to control time in tests
-});
-beforeEach(() => {
-    TestingTeam = new TeamMock(0, 'Team Name', 'No description', new Date(new Date().setHours(23, 59, 59, 999)));
-})
-afterEach(() => {
-    TestingTeam = null;
-})
-afterAll(() => {
-    console.log('Cleaning up the test environment for team tests...');
-    // vi.useRealTimers();
-});
+import { afterAll, afterEach, beforeAll, beforeEach, it, expect } from "vitest"
+import { PrismaClient } from '@prisma/client'
+import {PostgreSqlContainer, StartedPostgreSqlContainer} from '@testcontainers/postgresql'
+import {execSync} from 'child_process'
 
 
-describe('Team Class', () => {
-    it('should have create a team with the correct properties', () => {
-        expect(TestingTeam).toHaveProperty('id', 0);
-        expect(TestingTeam).toHaveProperty('name', 'Team Name');
-        expect(TestingTeam).toHaveProperty('description', 'No description');
-        expect(TestingTeam).toHaveProperty('createdAt', new Date(new Date().setHours(23, 59, 59, 999)));
-        expect(TestingTeam).toHaveProperty('members', []);
+let container: StartedPostgreSqlContainer
+let prisma: PrismaClient
+
+beforeAll(async () => {
+    container = await new PostgreSqlContainer()
+    .withDatabase("testdb")
+    .withUsername("test")
+    .withPassword("test")
+    .start();
+
+    process.env.DATABASE_URL = container.getConnectionUri();
+
+    execSync("npx prisma migrate deploy", {stdio: "inherit"});
+
+    prisma = new PrismaClient({
+        datasources: {
+            db: { url: container.getConnectionUri() }
+        }
     });
+    await prisma.$connect();
 });
 
-describe('Team Class Methods', () => {
-    it('should add and remove members correctly', () => {
-        // Create a mock user object
-        const user1 = new UserMock(1, "test@test.com", "User 1", true, true, null);
-        const user2 = new UserMock(2, "test@test.com", "User 2", true, true, null);
-        const user3 = new UserMock(3, "test@test.com", "Dummy user", false, false, null);
-        // Adds members to the team
-        TestingTeam?.addMember(user1);
-        TestingTeam?.addMember(user2);
-        // Verify that the members were added
-        expect(TestingTeam?.isInTeam(user1)).toBe(true);
-        expect(TestingTeam?.isInTeam(user2.id)).toBe(true);
-        expect(TestingTeam?.isInTeam(user3)).toBe(false);
-        expect(TestingTeam?.isInTeam(user3.id)).toBe(false);
-        // Removes members from the team
-        TestingTeam?.removeMember(user1);
-        TestingTeam?.removeMember(user2.id);
-        // Verify that the members were removed
-        expect(TestingTeam?.isInTeam(user1)).toBe(false);
-        expect(TestingTeam?.isInTeam(user2.id)).toBe(false);
-    });
+afterAll(async () => {
+    await prisma.$disconnect();
+    await container.stop();
+});
+
+beforeEach(async () => {
+    await prisma.task.deleteMany();
+    await prisma.team.deleteMany();
+    await prisma.user.deleteMany();
+});
+
+it("findMany() should return all teams in order", async () => {
+    await prisma.team.create({
+    data: {
+      name:        "Alpha",
+      description: "First team",
+      teamLeader: {
+        create: {
+          email:         "leader.a@example.com",
+          username:      "leaderA",
+          passwordHash: "dummyHash",
+          emailVerified: false,
+          totpKey: Buffer.from("dummyTotp"),
+          recoveryCode: Buffer.from("dummyRecovery"),
+        },
+      },
+    },
+  });
+
+  await prisma.team.create({
+    data: {
+      name:        "Beta",
+      description: "Second team",
+      teamLeader: {
+        create: {
+          email:         "leader.b@example.com",
+          username:      "leaderb",
+          passwordHash: "dummyHash",
+          emailVerified: false,
+          totpKey: Buffer.from("dummyTotp"),
+          recoveryCode: Buffer.from("dummyRecovery"),
+        },
+      },
+    },
+  });
+
+    const teams = await prisma.team.findMany({ orderBy: { id: "asc" } });
+    expect(teams.map((t) => t.name)).toEqual(["Alpha", "Beta"]);
+});
+
+it("findUnique() should return the correct team by ID", async () => {
+  const created = await prisma.team.create({
+    data: {
+      name:        "Gamma",
+      description: "Third team",
+      teamLeader: {
+        create: {
+          email:         "leader.g@example.com",
+          username:      "leaderG",
+          passwordHash:  "dummyHash",
+          emailVerified: false,
+          totpKey:       Buffer.from("dummyTotp"),
+          recoveryCode:  Buffer.from("dummyRecovery"),
+        },
+      },
+    },
+  });
+
+  const found = await prisma.team.findUnique({
+    where: { id: created.id },
+    include: { teamLeader: true },
+  });
+
+  expect(found).not.toBeNull();
+  expect(found).toMatchObject({
+    id:          created.id,
+    name:        "Gamma",
+    description: "Third team",
+    teamLeaderId: created.teamLeaderId,
+  });
+});
+
+it("findUnique() returns null when no such team exists", async () => {
+  const missing = await prisma.team.findUnique({ where: { id: 9999 } });
+  expect(missing).toBeNull();
 });

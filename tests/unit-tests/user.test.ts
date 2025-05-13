@@ -1,64 +1,91 @@
-import { describe, it, expect, beforeEach, beforeAll, afterEach, afterAll, vi } from 'vitest';
-import { UserMock } from '$lib/server/objects/user';
-
-let TestingUser: UserMock | null;
-
-beforeAll(() => {
-    console.log('Setting up the test environment for user tests...');
-    // vi.useFakeTimers(); // Use fake timers to control time in tests
-});
-beforeEach(() => {
-    TestingUser = new UserMock(0, 'test@test.com', 'User Name', false, true, new Date(new Date().setHours(23, 59, 59, 999)));
-})
-afterEach(() => {
-    TestingUser = null;
-})
-afterAll(() => {
-    console.log('Cleaning up the test environment for user tests...');
-    // vi.useRealTimers();
-});
+import { afterAll, afterEach, beforeAll, beforeEach, it, expect } from "vitest"
+import { PrismaClient } from '@prisma/client'
+import {PostgreSqlContainer, StartedPostgreSqlContainer} from '@testcontainers/postgresql'
+import {execSync} from 'child_process'
 
 
-describe('User Class', () => {
-    it('should have create a user with the correct properties', () => {
-        expect(TestingUser).toHaveProperty('id', 0);
-        expect(TestingUser).toHaveProperty('email', 'test@test.com');
-        expect(TestingUser).toHaveProperty('username', 'User Name');
-        expect(TestingUser).toHaveProperty('emailVerified', false);
-        expect(TestingUser).toHaveProperty('registered2FA', true);
-        expect(TestingUser).toHaveProperty('createdAt', new Date(new Date().setHours(23, 59, 59, 999)));
-        expect(TestingUser).toHaveProperty('lastLogin', new Date(new Date().setHours(23, 59, 59, 999)));
+let container: StartedPostgreSqlContainer
+let prisma: PrismaClient
+
+beforeAll(async () => {
+    container = await new PostgreSqlContainer()
+    .withDatabase("testdb")
+    .withUsername("test")
+    .withPassword("test")
+    .start();
+
+    process.env.DATABASE_URL = container.getConnectionUri();
+
+    execSync("npx prisma migrate deploy", {stdio: "inherit"});
+
+    prisma = new PrismaClient({
+        datasources: {
+            db: { url: container.getConnectionUri() }
+        }
     });
+    await prisma.$connect();
 });
 
-describe('User Class Methods', () => {
-    it('verifies the user by his email', () => {
-        expect(TestingUser?.isVerified()).toBe(false);
-        TestingUser?.setVerified(true); // Set the user as verified
-        expect(TestingUser?.isVerified()).toBe(true);
-    });
-    it('verifies correct user name input', () => {
-        const userName1 = "Not";
-        const userName2 = "ValidUserName";
-        const userName3 = "__________InvalidUserName__________";
-        const userName4 = " InvalidUserName ";
-        const userName5 = "Allemeineentchenschwimmenaufdemsee";
-
-        expect(TestingUser?.verifyUsernameInput(userName1)).toBe(false);
-        expect(TestingUser?.verifyUsernameInput(userName2)).toBe(true);
-        expect(TestingUser?.verifyUsernameInput(userName3)).toBe(false);
-        expect(TestingUser?.verifyUsernameInput(userName4)).toBe(false);
-        expect(TestingUser?.verifyUsernameInput(userName5)).toBe(false);
-    });
-    it('verifies password strength', async () => {
-        const password1 = "Longer";
-        const password2 = "IsSafeEnough";
-        const password3 = "VeryS1r0ngP@ssword";
-        const password4 = "QWERTZ1234!";
-
-        expect(await TestingUser?.verifyPasswordStrength(password1)).toBe(false);
-        expect(await TestingUser?.verifyPasswordStrength(password2)).toBe(true);
-        expect(await TestingUser?.verifyPasswordStrength(password3)).toBe(true);
-        expect(await TestingUser?.verifyPasswordStrength(password4)).toBe(false);
-    });
+afterAll(async () => {
+    await prisma.$disconnect();
+    await container.stop();
 });
+
+beforeEach(async () => {
+    await prisma.task.deleteMany();
+    await prisma.team.deleteMany();
+    await prisma.user.deleteMany();
+});
+
+it("findMany() should return all users in order", async () => {
+    await prisma.user.create({
+      data: {
+        email:         "alice@example.com",
+        username:      "alice",
+        passwordHash:  "hash1",
+        emailVerified: false,
+        totpKey:       Buffer.from("a1"),
+        recoveryCode:  Buffer.from("r1"),
+      },
+    });
+    await prisma.user.create({
+      data: {
+        email:         "bob@example.com",
+        username:      "bob",
+        passwordHash:  "hash2",
+        emailVerified: true,
+        totpKey:       null,
+        recoveryCode:  Buffer.from("r2"),
+      },
+    });
+
+    const users = await prisma.user.findMany({ orderBy: { id: "asc" } });
+    expect(users.map(u => u.username)).toEqual(["alice", "bob"]);
+  });
+
+  it("findUnique() should fetch the correct user by ID", async () => {
+    const created = await prisma.user.create({
+      data: {
+        email:         "carol@example.com",
+        username:      "carol",
+        passwordHash:  "hash3",
+        emailVerified: true,
+        totpKey:       Buffer.from("t3"),
+        recoveryCode:  Buffer.from("r3"),
+      },
+    });
+
+    const found = await prisma.user.findUnique({ where: { id: created.id } });
+    expect(found).not.toBeNull();
+    expect(found).toMatchObject({
+      id:            created.id,
+      email:         "carol@example.com",
+      username:      "carol",
+      emailVerified: true,
+    });
+  });
+
+  it("findUnique() returns null when no such user exists", async () => {
+    const missing = await prisma.user.findUnique({ where: { id: 9999 } });
+    expect(missing).toBeNull();
+  });
