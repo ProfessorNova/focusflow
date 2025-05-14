@@ -52,7 +52,7 @@ const config: runtime.GetPrismaClientConfig = {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "postgresql://postgres:postgres@localhost:42187/focusflow_test?schema=public"
+        "value": "postgresql://postgres:postgres@localhost:42187/postgres?schema=public"
       }
     }
   },

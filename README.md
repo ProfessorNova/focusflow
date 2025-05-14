@@ -41,3 +41,9 @@ You need to have the following installed:
 5. Start database with `docker-compose up postgres -d` to start postgres database.
 6. Start the development server with `npm run dev`.
 7. Then migrate the tables with `npx prisma migrate dev`
+
+---
+
+## Pipeline Status
+
+![Pipeline Status](https://github.com/ProfessorNova/focusflow/actions/workflows/ci.yml/badge.svg)

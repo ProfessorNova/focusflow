@@ -25,6 +25,7 @@
     "@sveltejs/adapter-node": "^5.2.12",
     "@sveltejs/kit": "^2.16.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
+    "@testcontainers/postgresql": "^10.25.0",
     "@types/node": "^22.15.3",
     "@types/pg": "^8.15.1",
     "@types/pikaday": "^1.7.9",

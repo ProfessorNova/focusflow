@@ -5,5 +5,8 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [tailwindcss(), sveltekit()],
-  test: {},
+  test: {
+    hookTimeout: 30000,
+    testTimeout: 30000,
+  },
 });
