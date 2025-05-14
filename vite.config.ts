@@ -8,5 +8,13 @@ export default defineConfig({
   test: {
     hookTimeout: 30000,
     testTimeout: 30000,
+
+    coverage: {
+      provider: "v8",          
+      reporter: ["text", "json", "html", "lcov"],
+      include: ["src/**/*.{js,ts,svelte}"],
+      exclude: ["node_modules/", "tests/"],
+      all: true,
+    },
   },
 });
