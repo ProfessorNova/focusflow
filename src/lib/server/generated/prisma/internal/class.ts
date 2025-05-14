@@ -11,7 +11,7 @@
  */
 
 import * as runtime from "@prisma/client/runtime/library"
-import type * as Prisma from "./prismaNamespace.js"
+import type * as Prisma from "./prismaNamespace.ts"
 
 
 const config: runtime.GetPrismaClientConfig = {
@@ -22,7 +22,7 @@ const config: runtime.GetPrismaClientConfig = {
       "value": "prisma-client"
     },
     "output": {
-      "value": "C:\\Users\\flowo\\Documents\\IntelliJ\\focusflow\\src\\lib\\server\\generated\\prisma",
+      "value": "D:\\olbap\\Dokumente_Eig\\Workspace\\GitHub\\focusflow\\src\\lib\\server\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -38,7 +38,7 @@ const config: runtime.GetPrismaClientConfig = {
     "previewFeatures": [
       "driverAdapters"
     ],
-    "sourceFilePath": "C:\\Users\\flowo\\Documents\\IntelliJ\\focusflow\\prisma\\schema.prisma",
+    "sourceFilePath": "D:\\olbap\\Dokumente_Eig\\Workspace\\GitHub\\focusflow\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativePath": "../../../../../prisma",

@@ -9,17 +9,12 @@
     "sourceMap": true,
     "strict": true,
     "moduleResolution": "Bundler",
-    "baseUrl": ".",
-    "paths": {
-      "$lib/*": ["src/lib/*"]
-    },
     "module": "ESNext",
-    // "moduleResolution": "node",
-    "target": "ES2020",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "verbatimModuleSyntax": true
-  }
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
+  },
   // Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
   // except $lib which is handled by https://svelte.dev/docs/kit/configuration#files
   //
