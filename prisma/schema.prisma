@@ -8,6 +8,7 @@ generator client {
   provider        = "prisma-client"
   previewFeatures = ["driverAdapters"]
   output          = "../src/lib/server/generated/prisma"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
