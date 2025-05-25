@@ -8,15 +8,15 @@ which makes it easy for non-technical stakeholders to understand the tests.
 
 ## Structure
 
-The features in gherkin syntax for the use cases are defined in the `tests/features` directory.
+The features in gherkin syntax for the use cases are defined in the `BDD/features` directory.
 The test cases are written in the `*.feature` files using the Gherkin syntax.
-The step definitions are implemented in the `tests/steps` directory. 
+The step definitions are implemented in the `BDD/steps` directory. 
 
 The step definitions are written in TypeScript and are responsible for executing the steps defined in the feature files.
 
 `cucumber.cjs` is the configuration file for Cucumber. It defines the paths to the feature files and step definitions.
 
-There are also support files in the `support` directory.
+There are also support files in the `BDD/support` directory.
 `hooks.ts` is used to define hooks that run before and after the tests.
 `world.ts` is used to define the context for the tests.
 
@@ -30,7 +30,7 @@ To run the tests, use the following command:
 npm run test-cucumber
 ```
 
-Runs a command within the `package.json` 
+This runs a command within the `package.json` 
 
 ```bash
 cucumber-js --config cucumber.cjs`
