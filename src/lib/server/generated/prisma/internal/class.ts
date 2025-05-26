@@ -22,7 +22,7 @@ const config: runtime.GetPrismaClientConfig = {
       "value": "prisma-client"
     },
     "output": {
-      "value": "D:\\olbap\\Dokumente_Eig\\Workspace\\GitHub\\focusflow\\src\\lib\\server\\generated\\prisma",
+      "value": "C:\\Users\\flowo\\Documents\\IntelliJ\\focusflow\\src\\lib\\server\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -33,12 +33,20 @@ const config: runtime.GetPrismaClientConfig = {
         "fromEnvVar": null,
         "value": "windows",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-1.1.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
       }
     ],
     "previewFeatures": [
       "driverAdapters"
     ],
-    "sourceFilePath": "D:\\olbap\\Dokumente_Eig\\Workspace\\GitHub\\focusflow\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\flowo\\Documents\\IntelliJ\\focusflow\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativePath": "../../../../../prisma",
@@ -48,16 +56,17 @@ const config: runtime.GetPrismaClientConfig = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "postgresql://postgres:postgres@localhost:42187/postgres?schema=public"
+        "value": null
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider        = \"prisma-client\"\n  previewFeatures = [\"driverAdapters\"]\n  output          = \"../src/lib/server/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum TaskPriority {\n  Low\n  Mid\n  High\n}\n\nenum TaskStatus {\n  Open\n  Pending\n  InReview\n  Closed\n}\n\nenum Tag {\n  Bug\n  Feature\n  Improvement\n  Task\n  Documentation\n  Enhancement\n  Hotfix\n  Optimization\n  Research\n  Chore\n  Meeting\n  Admin\n  Finance\n  Personal\n  Health\n  Event\n}\n\nmodel User {\n  id            Int       @id @default(autoincrement())\n  email         String    @unique\n  username      String\n  passwordHash  String\n  emailVerified Boolean   @default(false)\n  totpKey       Bytes?\n  recoveryCode  Bytes\n  createdAt     DateTime  @default(now())\n  lastLogin     DateTime?\n\n  sessions              Session[]\n  emailVerificationReqs EmailVerificationRequest[]\n  passwordResetSessions PasswordResetSession[]\n\n  teams       Team[]\n  teamsLeader Team[] @relation(\"TeamLeader\")\n  tasks       Task[]\n\n  @@index([email])\n}\n\nmodel Team {\n  id          Int      @id @default(autoincrement())\n  name        String\n  description String\n  createdAt   DateTime @default(now())\n\n  teamLeaderId Int\n  teamLeader   User   @relation(\"TeamLeader\", fields: [teamLeaderId], references: [id])\n  users        User[]\n  tasks        Task[]\n}\n\nmodel Task {\n  id          Int          @id @default(autoincrement())\n  title       String\n  teaser      String\n  description String\n  dueDate     DateTime\n  priority    TaskPriority\n  tags        Tag[]\n  status      TaskStatus\n\n  userId Int?\n  teamId Int?\n  user   User? @relation(fields: [userId], references: [id])\n  team   Team? @relation(fields: [teamId], references: [id])\n}\n\nmodel Session {\n  id                String   @id\n  userId            Int\n  expiresAt         DateTime\n  twoFactorVerified Boolean  @default(false)\n\n  user User @relation(fields: [userId], references: [id])\n}\n\nmodel EmailVerificationRequest {\n  id        String   @id\n  userId    Int\n  email     String\n  code      String\n  expiresAt DateTime\n\n  user User @relation(fields: [userId], references: [id])\n}\n\nmodel PasswordResetSession {\n  id                String   @id\n  userId            Int\n  email             String\n  code              String\n  expiresAt         DateTime\n  emailVerified     Boolean  @default(false)\n  twoFactorVerified Boolean  @default(false)\n\n  user User @relation(fields: [userId], references: [id])\n}\n",
-  "inlineSchemaHash": "85d323126a8a81cc928e035a12939760f1ee419cbfe39a3ad742b34c4d4c0a18",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider        = \"prisma-client\"\n  binaryTargets   = [\"native\", \"debian-openssl-1.1.x\", \"debian-openssl-3.0.x\"]\n  previewFeatures = [\"driverAdapters\"]\n  output          = \"../src/lib/server/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum TaskPriority {\n  Low\n  Mid\n  High\n}\n\nenum TaskStatus {\n  Open\n  Pending\n  InReview\n  Closed\n}\n\nenum Tag {\n  Bug\n  Feature\n  Improvement\n  Task\n  Documentation\n  Enhancement\n  Hotfix\n  Optimization\n  Research\n  Chore\n  Meeting\n  Admin\n  Finance\n  Personal\n  Health\n  Event\n}\n\nmodel User {\n  id            Int       @id @default(autoincrement())\n  email         String    @unique\n  username      String\n  passwordHash  String\n  emailVerified Boolean   @default(false)\n  totpKey       Bytes?\n  recoveryCode  Bytes\n  createdAt     DateTime  @default(now())\n  lastLogin     DateTime?\n\n  sessions              Session[]\n  emailVerificationReqs EmailVerificationRequest[]\n  passwordResetSessions PasswordResetSession[]\n\n  teams       Team[]\n  teamsLeader Team[] @relation(\"TeamLeader\")\n  tasks       Task[]\n\n  @@index([email])\n}\n\nmodel Team {\n  id          Int      @id @default(autoincrement())\n  name        String\n  description String\n  createdAt   DateTime @default(now())\n\n  teamLeaderId Int\n  teamLeader   User   @relation(\"TeamLeader\", fields: [teamLeaderId], references: [id])\n  users        User[]\n  tasks        Task[]\n}\n\nmodel Task {\n  id          Int          @id @default(autoincrement())\n  title       String\n  teaser      String\n  description String\n  dueDate     DateTime\n  priority    TaskPriority\n  tags        Tag[]\n  status      TaskStatus\n\n  userId Int?\n  teamId Int?\n  user   User? @relation(fields: [userId], references: [id])\n  team   Team? @relation(fields: [teamId], references: [id])\n}\n\nmodel Session {\n  id                String   @id\n  userId            Int\n  expiresAt         DateTime\n  twoFactorVerified Boolean  @default(false)\n\n  user User @relation(fields: [userId], references: [id])\n}\n\nmodel EmailVerificationRequest {\n  id        String   @id\n  userId    Int\n  email     String\n  code      String\n  expiresAt DateTime\n\n  user User @relation(fields: [userId], references: [id])\n}\n\nmodel PasswordResetSession {\n  id                String   @id\n  userId            Int\n  email             String\n  code              String\n  expiresAt         DateTime\n  emailVerified     Boolean  @default(false)\n  twoFactorVerified Boolean  @default(false)\n\n  user User @relation(fields: [userId], references: [id])\n}\n",
+  "inlineSchemaHash": "1622b375222789f5ac974bb469a43a116ce9d97e7a97f9dd13374ae5ed56ede5",
   "copyEngine": true,
   "runtimeDataModel": {
     "models": {},

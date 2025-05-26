@@ -1,12 +1,12 @@
 FROM node AS builder
 WORKDIR /app
 COPY package*.json .
-RUN npm ci
+RUN npm ci --omit=dev
 COPY . .
 RUN npm run prepare
 RUN npx prisma generate
 RUN npm run build
-RUN npm prune --production
+COPY src/lib/server/generated/prisma/libquery_engine-debian-openssl-3.0.x.so.node build/server/chunks
 
 FROM node
 WORKDIR /app
