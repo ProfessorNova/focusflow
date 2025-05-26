@@ -48,7 +48,7 @@
     <legend class="fieldset-legend">Selected tags</legend>
     {#each tags as tag}
       <div
-        class="flex bg-neutral border border-success rounded px-3 py-1 w-fit h-fit gap-1 items-center justify-center">
+        class=" border border-primary rounded px-3 py-1 w-fit h-fit gap-1 items-center justify-center">
         <a href="#_" class="" onclick={RemoveTag}>
           {tag}
           <div class="btn btn-ghost btn-circle h-fit w-fit m-0 p-0 items-center justify-center">
@@ -62,7 +62,7 @@
     class="fieldset bg-base-200 border border-base-300 p-4 rounded-box overflow-y-scroll overflow-x-hidden flex-wrap flex flex-row min-h-25">
     <legend class="fieldset-legend">Add tags</legend>
     {#each availableTags as tag}
-      <a href="#_" class="fieldset-label bg-neutral border border-info rounded px-3 py-1 w-fit"
+      <a href="#_" class="flex border border-primary rounded px-3 py-1 w-fit"
          onclick="{AddTag}">{tag}</a>
     {/each}
   </fieldset>

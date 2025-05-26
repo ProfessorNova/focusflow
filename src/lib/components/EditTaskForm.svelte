@@ -12,11 +12,11 @@
       LoadTaskData();
     }
   });
-
   let title: string = $state("");
   let teaser: string = $state("");
   let description: string = $state("");
   let dueDate: string = $state("");
+  let priority: string = $state("");
   let tags: string[] = $state([]);
 
   async function LoadTaskData() {
@@ -26,11 +26,12 @@
       title = task.title;
       teaser = task.teaser;
       description = task.description;
-      tags = task.tags;
       dueDate = task.dueDate
         ? new Date(new Date(task.dueDate).getTime() - new Date(task.dueDate).getTimezoneOffset() * 60000)
           .toISOString().substring(0, 16)
         : ""; // Format to 'YYYY-MM-DDTHH:MM' with correct timezone
+      priority = task.priority;
+      tags = task.tags;
     } catch (err) {
       console.error("Failed to load task.");
     }
@@ -44,12 +45,13 @@
   // Update the task via PUT request
   async function updateTask(): Promise<void> {
     try {
+      console.log(priority);
       const res = await fetch(`/api/tasks/${taskId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ title, teaser, description, dueDate, tags })
+        body: JSON.stringify({ title, teaser, description, dueDate, priority, tags })
       });
       if (res.ok) {
         updateSuccess = true;
@@ -67,10 +69,10 @@
 
 <!-- Update Task Form -->
 <form onsubmit={updateTask} class="container mx-auto">
-  <div class="card md:card-side bg-base-100 shadow-xl">
+  <div class="card md:card-side bg-base-100">
     <div class="card-body">
-      <TaskForm bind:title={title} bind:teaser={teaser} bind:tags={tags} bind:description={description}
-                bind:dueDate={dueDate} />
+      <TaskForm bind:title={title} bind:teaser={teaser} bind:description={description}
+                bind:dueDate={dueDate} bind:priority={priority} bind:tags={tags} />
       <div class="form-control flex justify-end">
         <button type="submit" class="btn btn-primary">
           <Save />

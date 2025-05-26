@@ -10,7 +10,7 @@
 <div id="pageTop"></div>
 <!-- hover:opacity-100 opacity-25 -->
 <!-- Include those class properties here \/ to make the bar seethrough while not hovering -->
-<div class="{y < JUMPLIMIT ? 'relative' : 'fixed'} z-10 top-0 left-0 flex bg-neutral w-full h-auto py-4 justify-center items-center gap-2 transition-opacity duration-750">
+<div class="{y < JUMPLIMIT ? 'relative' : 'fixed'} z-10 top-0 left-0 flex w-full h-auto py-4 justify-center items-center gap-2 transition-opacity duration-750">
     {#each navigationSections as section}
         {#if section[0] == $navSection}
             <a href="#pageTop" aria-label="{`Jumps to the top`}" class="flex items-center">

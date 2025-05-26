@@ -21,7 +21,7 @@
   };
 </script>
 
-<button class="btn btn-md btn-circle" title="Open modal" onclick={openModal}>
+<button class="btn btn-md btn-ghost btn-circle" title="Open modal" onclick={openModal}>
   <slot name="icon"/>
 </button>
 

@@ -17,12 +17,14 @@
   let tasks: Array<{
     id: number,
     title: string,
-    status: string,
     teaser: string,
-    tag: string[],
     description: string,
-    // changed: boolean,
+    dueDate: string | null,
+    priority: string,
+    status: string,
+    tags: string[]
   }> = $state([]);
+
   // New form of declaring variables in runes version (cant mix old with new syntax)
   // Also updates UI when changed is implemented
   let error: string | null = $state("");
@@ -45,27 +47,20 @@
 
   let title: string = $state("");
   let teaser: string = $state("");
-  let tags: string[] = $state([]);
   let description: string = $state("");
+  let dueDate: string = $state("");
+  let priority: string = $state("Low");
+  let tags: string[] = $state([]);
 
-  /**
-   * Creates a new task by sending a POST request.
-   *
-   * @param {string} title - The title of the task.
-   * @param {string} teaser - The teaser of the task.
-   * @param {string[]} tags - The tags of the task.
-   * @param {string} description - The description of the task.
-   * @returns {Promise<void>}
-   */
-  async function createTask(title: string, teaser: string, tags: string[], description: string): Promise<void> {
-    const assignee = "User";
+  async function createTask(title: string, teaser: string,  description: string,
+                            dueDate: string, priority: string, tags: string[]): Promise<void> {
     try {
       const res = await fetch("/api/tasks", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ title, teaser, tags, description, userId, assignee })
+        body: JSON.stringify({ userId, title, teaser, description, priority, tags })
       });
       if (res.ok) {
         const newTask = await res.json();
@@ -114,14 +109,13 @@
       <span>{error}</span>
     </div>
   {:else if tasks.length === 0}
-    <div class="alert alert-info">
-      <span>No tasks available.</span>
+    <div class="border border-info rounded-lg p-4 text-center">
+      <span>Everything done!</span>
     </div>
   {:else}
     <!-- List of tasks with collapsible descriptions -->
-    <ul class="list bg-base-100 rounded-box shadow-md">
+    <ul class="list bg-base-100 rounded-box">
       {#each tasks as task (task.id)}
-        <!-- id to identify changed task | class property (list-row) does weird things | transition:fly={{x: 50, duration: 300}} -->
         <li id="{task.id.toString()}" class="flex p-2 rounded-xl items-center justify-between"
             transition:fly={{x: 50, duration: 300}}>
           <div class="flex gap-2 items-center">
@@ -149,9 +143,12 @@
   {/if}
 
   <!-- Form for creating a new task -->
-  <form class="mt-4 card bg-base-100 shadow-xl p-4 gap-4 flex-row justify-center items-end"
-        onsubmit={() => createTask(title, teaser, tags, description)}>
-    <TaskForm bind:title={title} bind:teaser={teaser} bind:tags={tags} bind:description={description} />
+  <form class="mt-4 card bg-base-100 p-4 gap-4 flex-row justify-center items-end"
+        onsubmit={() => {
+          createTask(title, teaser, description, dueDate, priority, tags);
+        }}>
+    <TaskForm bind:title={title} bind:teaser={teaser} bind:description={description}
+              bind:dueDate={dueDate} bind:priority={priority} bind:tags={tags} />
     <div class="form-control">
       <button type="submit" class="btn btn-primary">
         <ListPlus />

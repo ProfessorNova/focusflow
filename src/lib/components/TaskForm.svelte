@@ -1,19 +1,19 @@
 <script lang="ts">
     import TaskTagList from "./TaskTagList.svelte";
 
-
     let {
-    title = $bindable(""),
-    teaser = $bindable(""),
-    tags = $bindable<string[]>([]),
-    description = $bindable(""),
-    dueDate = $bindable(""), ...props
-  } = $props();
-
+      title = $bindable(""),
+      teaser = $bindable(""),
+      description = $bindable(""),
+      dueDate = $bindable(""),
+      priority = $bindable(""),
+      tags = $bindable<string[]>([]),
+      ...props
+    } = $props();
 </script>
 
 
-<div class="grid grid-rows-5 grid-cols-2 gap-4  self-center">
+<div class="grid grid-rows-5 grid-cols-2 gap-4 self-center">
   <div class="flex justify-center items-center col-1 row-1">
     <input
       id="taskTitle"
@@ -53,12 +53,16 @@
     />
   </div>
 
-  <div class="col-2 row-1 flex justify-center items-center h-full w-full">
-    <select class="select select-neutral w-full">
-      <option disabled selected class="font-bold">Task priority</option>
-      <option>North America</option>
-      <option>EU west</option>
-      <option>South East Asia</option>
+  <div class="flex justify-center items-center">
+    <select
+      id="taskPriority"
+      bind:value={priority}
+      class="select select-bordered w-full max-w-xs"
+    >
+      <option value="" disabled selected>Select Priority</option>
+      <option value="Low">Low</option>
+      <option value="Mid">Mid</option>
+      <option value="High">High</option>
     </select>
   </div>
 
