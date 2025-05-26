@@ -1,0 +1,3 @@
+- How to access the api endpoint
+- Which methods are implemented
+- Expected requests and responses

@@ -46,8 +46,12 @@ export const DELETE: RequestHandler = async ({ params }) => {
   }
   try {
     const deletedTask = await deleteTask(taskId);
+    if(!deletedTask) {
+      throw new Error("Failed to delete a task");
+    }
     return json(deletedTask);
   } catch (error) {
+    console.log(error);
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
     });

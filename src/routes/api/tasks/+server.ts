@@ -44,6 +44,9 @@ export const POST: RequestHandler = async ({ request }) => {
       tags,
       status,
     );
+    if(!task) {
+      throw new Error("Failed to create a task");
+    }
     return json(task);
   } catch (error) {
     console.log(error);
