@@ -21,8 +21,10 @@ jobs:
 
       - name: build and push
         run: |
-          docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/professornova/focusflow:latest .
-          docker push ghcr.io/professornova/focusflow:latest
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t ghcr.io/professornova/focusflow:latest \
+            --push .
 
   deploy:
     runs-on: ubuntu-latest
