@@ -1,7 +1,7 @@
 <script lang="ts">
-    import {enhance} from "$app/forms";
-    import {navSection} from "$lib/store/navSectionStore";
-    import type {ActionData, PageData} from "./$types";
+    import { enhance } from "$app/forms";
+    import { navSection } from "$lib/store/navSectionStore";
+    import type { ActionData, PageData } from "./$types";
     import NavSectionDisplay from "$lib/components/NavSectionDisplay.svelte";
     import Navbar from "$lib/components/NavBar.svelte";
 
@@ -29,7 +29,7 @@
 
     <!-- Update Email Section -->
     <section class="mb-6">
-        <div class="card bg-base-100 shadow-lg shadow-neutral">
+        <div class="card bg-base-100 shadow-sm shadow-secondary">
             <div class="card-body">
                 <h2 class="card-title">Update email</h2>
                 <p class="text-sm text-gray-600">Your email: {data.user.email}</p>
@@ -57,7 +57,7 @@
 
     <!-- Update Password Section -->
     <section class="mb-6">
-        <div class="card bg-base-100 shadow-lg shadow-neutral">
+        <div class="card bg-base-100 shadow-sm shadow-secondary">
             <div class="card-body">
                 <h2 class="card-title">Update password</h2>
                 <form method="post" use:enhance action="?/password">
@@ -103,7 +103,7 @@
     <!-- Two-Factor Authentication Section -->
     {#if data.user.registered2FA}
         <section class="mb-6">
-            <div class="card bg-base-100 shadow-lg shadow-neutral">
+            <div class="card bg-base-100 shadow-sm shadow-secondary">
                 <div class="card-body">
                     <h2 class="card-title">Update two-factor authentication</h2>
                     <a href="/2fa/setup" class="btn btn-secondary">Update</a>
@@ -115,7 +115,7 @@
     <!-- Recovery Code Section -->
     {#if data.recoveryCode !== null}
         <section class="mb-6">
-            <div class="card bg-base-100 shadow-lg shadow-neutral">
+            <div class="card bg-base-100 shadow-sm shadow-secondary">
                 <div class="card-body">
                     <h2 class="card-title">Recovery code</h2>
                     <div class="form-control">
