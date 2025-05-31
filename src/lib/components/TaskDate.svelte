@@ -46,6 +46,6 @@
     })
 </script>
 
-<div class={dueClass}>
+<div class={dueClass} data-testid="TaskListDueDate">
     Due: {formattedDate}
 </div>

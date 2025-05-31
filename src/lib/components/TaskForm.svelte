@@ -21,6 +21,7 @@
       placeholder="Task Title"
       bind:value={title}
       class="input input-bordered"
+      data-testid="TaskFormTitle"
       required
     />
   </div>
@@ -31,6 +32,7 @@
       placeholder="Task Teaser"
       bind:value={teaser}
       class="input input-bordered"
+      data-testid="TaskFormTeaser"
     />
   </div>
 
@@ -41,6 +43,7 @@
           bind:value={description}
           class="textarea"
           rows="3"
+          data-testid="TaskFormDescription"
         ></textarea>
   </div>
 
@@ -50,6 +53,7 @@
       bind:value={dueDate}
       type="datetime-local"
       class="input"
+      data-testid="TaskFormDueDate"
     />
   </div>
 
@@ -58,6 +62,7 @@
       id="taskPriority"
       bind:value={priority}
       class="select select-bordered w-full max-w-xs"
+      data-testid="TaskFormPriority"
     >
       <option value="" disabled selected>Select Priority</option>
       <option value="Low">Low</option>

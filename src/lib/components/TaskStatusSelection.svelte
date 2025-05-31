@@ -48,7 +48,9 @@
 </script>
 
 <div class="dropdown dropdown-bottom">
-  <div tabindex="0" role="button" class="btn btn-ghost btn-circle" title="{status}">
+  <div tabindex="0" role="button" class="btn btn-ghost btn-circle" title="{status}"
+    data-testid="TaskListStatus"
+  >
     {#if status === "Open"}
       <Circle />
     {:else if status === "Pending"}

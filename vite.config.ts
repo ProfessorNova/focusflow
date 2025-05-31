@@ -16,5 +16,6 @@ export default defineConfig({
       exclude: ["node_modules/", "tests/"],
       all: true,
     },
+    // setupFiles: ['./tests/setup.ts'],
   },
 });

@@ -7,6 +7,7 @@
       closeModal();
     }
   });
+  let { Icon, Content } = props;
 
   let modal: HTMLDialogElement;
 
@@ -22,14 +23,18 @@
 </script>
 
 <button class="btn btn-md btn-ghost btn-circle" title="Open modal" onclick={openModal}>
-  <slot name="icon"/>
+  <!-- <slot name="icon"/> -->
+  {@render Icon()}
 </button>
 
 <dialog bind:this={modal} class="modal">
   <div class="modal-box">
-    <button class="btn btn-circle btn-sm absolute right-2 top-2 z-10" onclick={closeModal}>
+    <button class="btn btn-circle btn-sm absolute right-2 top-2 z-10" onclick={closeModal}
+      data-testid="TaskModalOpen"
+    >
       <X/>
     </button>
-    <slot name="content" onclose={closeModal}/>
+    <!-- <slot name="content" onclose={closeModal}/> -->
+    {@render Content(closeModal)}
   </div>
 </dialog>

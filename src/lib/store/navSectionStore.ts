@@ -9,7 +9,7 @@ export const navSection = writable("null");
 // Has all the user sections stored
 export const navigationSections = [
   ["Home", "/"],
-  ["Dashboard", "/"],
+  // ["Dashboard", "/"],
   ["Settings", "/settings"],
 ];
 
