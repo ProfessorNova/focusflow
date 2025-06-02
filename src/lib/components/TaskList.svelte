@@ -154,7 +154,9 @@
     <TaskForm bind:title={title} bind:teaser={teaser} bind:description={description}
               bind:dueDate={dueDate} bind:priority={priority} bind:tags={tags} />
     <div class="form-control">
-      <button type="submit" class="btn btn-primary">
+      <button type="submit" class="btn btn-primary"
+        data-testid="TaskListCreate"
+      >
         <ListPlus />
       </button>
     </div>

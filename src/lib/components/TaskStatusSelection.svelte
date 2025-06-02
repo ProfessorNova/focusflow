@@ -62,7 +62,9 @@
     {/if}
   </div>
   <ul id="TaskStatusList"
-      class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm {statusChanged ? `hidden` : ``}">
+    class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm {statusChanged ? `hidden` : ``}"
+    data-testid="TaskStatusSelection"
+  >
     <li>
       <button type="button" onclick={() => { status = "Open"; updateTask();}}>Open</button>
     </li>

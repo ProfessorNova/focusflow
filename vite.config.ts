@@ -16,6 +16,11 @@ export default defineConfig({
       exclude: ["node_modules/", "tests/"],
       all: true,
     },
-    // setupFiles: ['./tests/setup.ts'],
+  },
+  // cloudflare protocol 
+  build: {
+    rollupOptions: {
+      external: ['cloudflare:sockets'],
+    },
   },
 });
