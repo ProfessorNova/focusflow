@@ -32,11 +32,11 @@
 <main class="w-full">
     {#if firstLogin === true}
         <Banner visibleTime={2600} fadeIn={600} fadeOut={750}>
-            <p>Welcome {data.user.username}!</p>
+            <p>Welcome {data?.user?.username}!</p>
         </Banner>
     {/if}
 
     <div class="w-full flex flex-col items-center mt-8">
-        <TaskList userId={data.user.id}/>
+        <TaskList userId={data?.user?.id}/>
     </div>
 </main>

@@ -17,4 +17,10 @@ export default defineConfig({
       all: true,
     },
   },
+  // cloudflare protocol 
+  build: {
+    rollupOptions: {
+      external: ['cloudflare:sockets'],
+    },
+  },
 });

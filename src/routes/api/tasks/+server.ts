@@ -33,17 +33,33 @@ export const POST: RequestHandler = async ({ request }) => {
     status,
   } = await request.json();
   try {
-    const task = await createTask(
-      title,
-      userId,
-      teamId,
-      teaser,
-      description,
-      dueDate,
-      priority,
-      tags,
-      status,
-    );
+    // Uses the default dueDate if input is empty
+    const task = (dueDate == "") ?
+      await createTask(
+        title,
+        userId,
+        teamId,
+        teaser,
+        description,
+        undefined,
+        priority,
+        tags,
+        status,
+      )
+    :
+      await createTask(
+        title,
+        userId,
+        teamId,
+        teaser,
+        description,
+        new Date(dueDate),
+        priority,
+        tags,
+        status,
+      )
+    ;
+    
     if(!task) {
       throw new Error("Failed to create a task");
     }

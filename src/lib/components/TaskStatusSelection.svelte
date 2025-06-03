@@ -48,7 +48,9 @@
 </script>
 
 <div class="dropdown dropdown-bottom">
-  <div tabindex="0" role="button" class="btn btn-ghost btn-circle" title="{status}">
+  <div tabindex="0" role="button" class="btn btn-ghost btn-circle" title="{status}"
+    data-testid="TaskListStatus"
+  >
     {#if status === "Open"}
       <Circle />
     {:else if status === "Pending"}
@@ -60,7 +62,9 @@
     {/if}
   </div>
   <ul id="TaskStatusList"
-      class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm {statusChanged ? `hidden` : ``}">
+    class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm {statusChanged ? `hidden` : ``}"
+    data-testid="TaskStatusSelection"
+  >
     <li>
       <button type="button" onclick={() => { status = "Open"; updateTask();}}>Open</button>
     </li>

@@ -44,7 +44,9 @@
 
 <div class="flex flex-col h-full overflow-hidden gap-2 relative justify-evenly">
   <fieldset
-    class="fieldset bg-base-200 border border-base-300 p-4 rounded-box overflow-y-scroll overflow-x-hidden flex-wrap flex flex-row min-h-25">
+    class="fieldset bg-base-200 border border-base-300 p-4 rounded-box overflow-y-scroll overflow-x-hidden flex-wrap flex flex-row min-h-25"
+      data-testid="TaskFormTagRemove"
+    >
     <legend class="fieldset-legend">Selected tags</legend>
     {#each tags as tag}
       <div
@@ -59,7 +61,9 @@
     {/each}
   </fieldset>
   <fieldset
-    class="fieldset bg-base-200 border border-base-300 p-4 rounded-box overflow-y-scroll overflow-x-hidden flex-wrap flex flex-row min-h-25">
+    class="fieldset bg-base-200 border border-base-300 p-4 rounded-box overflow-y-scroll overflow-x-hidden flex-wrap flex flex-row min-h-25"
+      data-testid="TaskFormTagAdd"
+    >
     <legend class="fieldset-legend">Add tags</legend>
     {#each availableTags as tag}
       <a href="#_" class="flex border border-primary rounded px-3 py-1 w-fit"

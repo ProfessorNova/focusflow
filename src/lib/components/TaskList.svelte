@@ -60,7 +60,7 @@
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ userId, title, teaser, description, priority, tags })
+        body: JSON.stringify({ userId, title, teaser, description, dueDate, priority, tags })
       });
       if (res.ok) {
         const newTask = await res.json();
@@ -121,16 +121,20 @@
           <div class="flex gap-2 items-center">
             <TaskStatusSelection taskId={task.id} status={task.status} />
             <div>
-              <div>{task.title}</div>
-              <div class="text-xs uppercase font-semibold opacity-60">{task.teaser}</div>
+              <div data-testid="TaskListTitle">{task.title}</div>
+              <div class="text-xs uppercase font-semibold opacity-60" data-testid="TaskListTeaser">{task.teaser}</div>
               <TaskDate taskId={task.id} update={editTaskSuccess} />
             </div>
           </div>
           <div class="flex gap-2">
             <TaskEditModal bind:modalClosed={taskModalClosed} close={editTaskSuccess}>
-              <Pencil slot="icon" />
-              <EditTaskForm slot="content" checkSavings={taskModalClosed} taskId={task.id}
-                            bind:updateSuccess={editTaskSuccess} />
+              {#snippet Icon()}
+                <Pencil slot="icon" />
+              {/snippet}
+              {#snippet Content(onCloseFn: Function)}
+                <EditTaskForm slot="content" checkSavings={taskModalClosed} taskId={task.id}
+                              bind:updateSuccess={editTaskSuccess} onclose={onCloseFn}/>
+              {/snippet}
             </TaskEditModal>
             <button class="btn btn-square btn-ghost" title="Delete task" onclick={() => deleteTask(task.id)}>
               <Trash2 />
@@ -150,7 +154,9 @@
     <TaskForm bind:title={title} bind:teaser={teaser} bind:description={description}
               bind:dueDate={dueDate} bind:priority={priority} bind:tags={tags} />
     <div class="form-control">
-      <button type="submit" class="btn btn-primary">
+      <button type="submit" class="btn btn-primary"
+        data-testid="TaskListCreate"
+      >
         <ListPlus />
       </button>
     </div>
