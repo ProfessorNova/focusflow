@@ -76,4 +76,19 @@ export default defineConfig({
   //   url: 'http://127.0.0.1:3000',
   //   reuseExistingServer: !process.env.CI,
   // },
+  
+  // Eventually should have used this to externalize prisma
+  // https://www.prisma.io/blog/testing-series-4-OVXtDis201#technologies-you-will-use
+  // webServer: [
+  //   {
+  //     command: 'pnpm run --filter=backend dev',
+  //     port: 3000,
+  //     reuseExistingServer: true
+  //   },
+  //   {
+  //     command: 'pnpm run --filter=frontend dev',
+  //     port: 5173,
+  //     reuseExistingServer: true
+  //   }
+  // ]
 });

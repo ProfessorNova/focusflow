@@ -70,7 +70,9 @@
 <!-- Update Task Form -->
 <form onsubmit={updateTask} class="container mx-auto">
   <div class="card md:card-side bg-base-100">
-    <div class="card-body">
+    <div class="card-body"
+      data-testid="EditTaskForm"
+    >
       <TaskForm bind:title={title} bind:teaser={teaser} bind:description={description}
                 bind:dueDate={dueDate} bind:priority={priority} bind:tags={tags} />
       <div class="form-control flex justify-end">

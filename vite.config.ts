@@ -17,7 +17,8 @@ export default defineConfig({
       all: true,
     },
   },
-  // cloudflare protocol 
+  // cloudflare protocol
+  // Trying to externalize cloudflare protocol
   build: {
     rollupOptions: {
       external: ['cloudflare:sockets'],

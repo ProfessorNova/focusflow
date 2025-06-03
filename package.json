@@ -17,8 +17,10 @@
     "test-cucumber": "cross-env DEBUG=false cucumber-js --config cucumber.cjs",
     "debug-cucumber": "cross-env DEBUG=true cucumber-js --config cucumber.cjs",
     "coverage": "vitest run --coverage",
-    "test-ui": "vitest --workspace=vitest.workspace.ts",
-    "test-all-doesnt-work-rightnow": "vitest --project=unit --project=browser"
+    "test-ui-old": "vitest --workspace=vitest.workspace.ts",
+    "test-ui": "vitest --project=browser --browser.headless",
+    "debug-ui": "vitest --project=browser",
+    "test-all": "vitest --project=unit --project=browser"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^11.2.0",
