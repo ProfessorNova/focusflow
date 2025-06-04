@@ -34,8 +34,44 @@ The possibility of defining multiple projects (***here still: workspaces***) in 
 
 ### Code and dependencies
 
-...
+The syntax for the test code works similar to the playwright syntax. Vitest has some wrapper functions and an own api for that.
 
+First you have to specify what to render to be able to use the page variable borrowed from playwright.
+```ts
+import { render } from 'vitest-browser-svelte'
+import { page } from '@vitest/browser/context';
+import main from "${path_to_module}/+page.svelte";
+
+// You can also get the rendered module directly from the render function
+const screen = render(main, {
+  // optional parameters for the svelte module
+});
+// With the page variable locators can be created
+const locator = page.Selector(...);
+locator.click();
+```
+
+In our case all selectors are stored in a separate file in the `/context` folder. This allows to use the same selectors in all tests and to change them easily if needed. A common pattern is to use the `data-testid` attribute to identify elements in the UI. This makes it easier to select elements without relying on CSS classes or IDs that might change. 
+```ts
+page.getByTestId(`data-testid`);
+```
+
+Other dependencies are imported through the `setup.ts` file. In our case we again specified the provider for the browser mode and included our styles.
+```ts
+/// <reference types="@vitest/browser/providers/playwright" />
+import "$lib/../style.css";
+```
+
+---
+*Conclusion:
+Defining locators and selecting elements works really well and the API is easy to use. A problem is that modules can be used multiple times so we have to concatenate selectors to create a unique and valid locator for our elements.*
+
+## Results
+
+During the implementation some unexpected behavior from the watch mode of vitest was observed. When updating the test files in some cases the runner couldnt bind the new test files which led to flaky tests. An error occured saying its a known bug but no solution is available yet. When normally running the tests through the command line this problem did not occur. 
+
+
+## Difficulties
 
 ---
 #### dsgsg
