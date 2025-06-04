@@ -37,8 +37,12 @@ export default defineConfig({
                     testTimeout: 30000,
                     globals: true,
                     css: true,
-                    environment: 'jsdom',
-
+                    // environment: 'jsdom',
+                    // server: {
+                    //     deps: {
+                    //         inline: true
+                    //     },
+                    // },
                     include: [
                         'tests/UI-E2E-tests/**/*.{spec,test}.ts',
                     ],

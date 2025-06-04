@@ -11,8 +11,8 @@
 
   // Global import of passed parameters
   let props = $props();
-  // export let userId: number;
   let userId: number = props.userId;
+  // export let userId: number;
 
   let tasks: Array<{
     id: number,
@@ -26,10 +26,30 @@
   }> = $state([]);
 
   // New form of declaring variables in runes version (cant mix old with new syntax)
-  // Also updates UI when changed is implemented
+  // Also updates UI when 'changed' is implemented
+  // => Row 'changed' was deleted so we have to implement a function to update the tasks
   let error: string | null = $state("");
   let editTaskSuccess = $state(false);
+  let smallChangeSuccess = $state(false);
   let taskModalClosed = $state(false);
+
+  $effect(() => {
+    if(editTaskSuccess == true || smallChangeSuccess == true) {
+      (async () => {
+        try {
+          const res = await fetch(`/api/tasks?userId=${userId}`);
+          const newTasks = await res.json();
+          if(!newTasks) {
+            throw "Retrieved invalid tasks";
+          } else {
+            tasks = newTasks;
+          }
+        } catch (err) {
+          error = "Failed to load tasks.";
+        }
+      })();
+    }
+  });
 
   // Default task for UI Tests
   const initMockTask = {
@@ -133,7 +153,9 @@
         <li id="{task.id.toString()}" class="flex p-2 rounded-xl items-center justify-between"
             transition:fly={{x: 50, duration: 300}}>
           <div class="flex gap-2 items-center">
-            <TaskStatusSelection taskId={task.id} status={task.status} />
+            <!-- Passed argument: status={task.status} has no effect -->
+            <!-- Remove binding to disable update event -->
+            <TaskStatusSelection bind:statusChanged={smallChangeSuccess} taskId={task.id} />
             <div>
               <div data-testid="TaskListTitle">{task.title}</div>
               <div class="text-xs uppercase font-semibold opacity-60" data-testid="TaskListTeaser">{task.teaser}</div>

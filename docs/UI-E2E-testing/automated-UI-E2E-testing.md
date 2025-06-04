@@ -26,7 +26,7 @@ As for the upcoming version 3.2 of vitest the environments are not anymore defin
 The versions 3.0+ of vitest still support the old workspace definition but it is recommended to use the new project definition which is kind of available in our vitest beta version ^3.1.4.
 
 As for now we have two setup files providing the same functionality. One with the new approach `vitest.config.ts` and one with the old approach `vitest.workspace.ts`. </br>
-For running the tests the newer approach is used. The internal command specifies the environment (`--project=${name}`) which should be used and eventually sets the headless (`--browser.headles`) flag - by default the interactive mode is used.
+For running the tests the newer approach is used. The internal command specifies the environment (`--project=${name}`) which should be used and eventually sets the headless flag (`--browser.headless`) - by default the interactive mode is used.
 
 ---
 *Conclusion:
@@ -68,18 +68,20 @@ Defining locators and selecting elements works really well and the API is easy t
 
 ## Results
 
-During the implementation some unexpected behavior from the watch mode of vitest was observed. When updating the test files in some cases the runner couldnt bind the new test files which led to flaky tests. An error occured saying its a known bug but no solution is available yet. When normally running the tests through the command line this problem did not occur. 
+During the implementation some unexpected behavior from the watch mode of vitest was observed. When updating the test files in some cases the runner could not bind the new test files which led to flaky behavior. An error message appeared saying its a known bug but no solution is available yet. When normally running the tests through the command line this problem did not occur. </br>
+Some other issues were related to the fact that components were used multiple times in the UI which led to failures during the tests. This could easily be solved by concatenating the selectors as described above.
 
+The finished tests all ran successfully in both headless and interactive mode. The coverage command also included the tests in its report. So there were no issues with the different environments.
 
 ## Difficulties
 
----
-#### dsgsg
+There were mainly two difficulties due to the fact that the browser mode of vitest is still in beta.
 
-Documentation of your test cases and additional information on how to execute them 
-Exercise 10.3 (10 Points): Execute & Document your tests 
-Task: Run your test in a headless and interactive mode (if supported). Document the test output and 
-note any errors, flaky behavior, or insights. Reflect briefly on what was easy / difficult about testing 
-your UI. 
-Deliverables:  
-• Documentation explaining how to run the tests, output, insights available.
+1. **Loading of SSR modules**: A big problem was the loading of the corresponding functions. Somehow the vitest test server did not load the modules correctly in the browser mode. It is unclear why this happenes but it seems to be a problem with the server-side rendering (SSR) of the modules inside this browser environment runned by playwright (**server url:** `http://localhost:63315/`). The browser mode is as documented not really designed for E2E testing but rather for UI testing. Good practice is to mock the specific functions if possible already at the api layer. We did not even encountered this stage because it failed while loading the inline functions of the svelte module.
+
+2. **Externalization**: The bigger problem was the externalization of the node modules which did not work apperantly due to the beta version of the browser mode. Some modules, in this case the prisma modules, could not be externalized from the environment which is why the server crashed. It is related to the fact that the runner or the environment does not support the communication protocol of those modules. The error messages were that files could not be found or imported and that the connection of the cloudflare:socket, which is used by the prisma client, failed to connect. To be able to run the tests we had to mock the prisma client so that the errors occurred in the mock and could be handled within the environment. This led to the tests throwing errors that were only recognized as warnings, but still completed successfully.
+
+---
+*Conclusion:* </br>
+*1. When looking at the past we should have considered extracting the logic out of the svelte modules for better testability. With that we could have implemented unit tests more easily. Another approach we found along the way but did not use was inline testing which allows kind of unit testing but does not help with the SSR problem.* </br>
+*2. Using prisma with vitest is still a great way to handle database interactions as well as in the tests. It was just a little bit unlucky that the beta version of the browser mode hade such a problem with prisma. So in that case it was not optimal but for the rest it worked well.*
