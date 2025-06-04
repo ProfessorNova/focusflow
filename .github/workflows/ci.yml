@@ -30,8 +30,7 @@ jobs:
 
         - name: Creating output file
           run: |
-            mkdir coverage
-            touch coverage/lcov.info
+            mkdir coverage & touch coverage/lcov.info
 
         - name: Run tests & generage coverage
           run: npm run coverage
