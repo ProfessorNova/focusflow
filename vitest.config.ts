@@ -28,8 +28,6 @@ export default defineConfig({
                     environment: 'node',
                 },
             },
-            // Doesnt work but dont know why
-            // Docs are unclear
             {
                 extends: true,
                 test: {
@@ -39,12 +37,19 @@ export default defineConfig({
                     testTimeout: 30000,
                     globals: true,
                     css: true,
-
+                    // environment: 'jsdom',
+                    // server: {
+                    //     deps: {
+                    //         inline: true
+                    //     },
+                    // },
                     include: [
                         'tests/UI-E2E-tests/**/*.{spec,test}.ts',
                     ],
+                    setupFiles: ['tests/setup.ts'],
                     browser: {
                         provider: 'playwright', // or 'webdriverio'
+                        // https://vitest.dev/guide/browser/playwright
                         enabled: true,
                         // headless: true,
                         instances: [

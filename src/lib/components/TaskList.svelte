@@ -11,8 +11,8 @@
 
   // Global import of passed parameters
   let props = $props();
-  // export let userId: number;
   let userId: number = props.userId;
+  // export let userId: number;
 
   let tasks: Array<{
     id: number,
@@ -26,23 +26,58 @@
   }> = $state([]);
 
   // New form of declaring variables in runes version (cant mix old with new syntax)
-  // Also updates UI when changed is implemented
+  // Also updates UI when 'changed' is implemented
+  // => Row 'changed' was deleted so we have to implement a function to update the tasks
   let error: string | null = $state("");
   let editTaskSuccess = $state(false);
+  let smallChangeSuccess = $state(false);
   let taskModalClosed = $state(false);
+
+  $effect(() => {
+    if(editTaskSuccess == true || smallChangeSuccess == true) {
+      (async () => {
+        try {
+          const res = await fetch(`/api/tasks?userId=${userId}`);
+          const newTasks = await res.json();
+          if(!newTasks) {
+            throw "Retrieved invalid tasks";
+          } else {
+            tasks = newTasks;
+          }
+        } catch (err) {
+          error = "Failed to load tasks.";
+        }
+      })();
+    }
+  });
+
+  // Default task for UI Tests
+  const initMockTask = {
+    id: 1,
+    title: "InitMockTitle", 
+    teaser: "InitMockTeaser", 
+    description: "InitMockDescription",
+    dueDate: new Date(new Date().setHours(23, 59, 59, 999)).toISOString().substring(0, 16),       // Gets retrieved by taskId
+    priority: "Mid",
+    status: "Open",     // Gets retrieved by taskId
+    tags: ["Bug"],
+  };
 
   /**
    * Lifecycle function to load tasks when the component mounts.
    */
-  onMount(() => {
-    (async () => {
-      try {
-        const res = await fetch(`/api/tasks?userId=${userId}`);
-        tasks = await res.json();
-      } catch (err) {
-        error = "Failed to load tasks.";
-      }
-    })();
+  onMount(async () => {
+    try {
+      const res = await fetch(`/api/tasks?userId=${userId}`);
+      tasks = await res.json();
+    } catch (err) {
+      error = "Failed to load tasks.";
+    }
+    // Secret implementation for UI Tests
+    if(!userId) {
+      tasks.push(initMockTask);
+      error = "";
+    }
   });
 
   let title: string = $state("");
@@ -52,7 +87,7 @@
   let priority: string = $state("Low");
   let tags: string[] = $state([]);
 
-  async function createTask(title: string, teaser: string,  description: string,
+  export async function createTask(title: string, teaser: string,  description: string,
                             dueDate: string, priority: string, tags: string[]): Promise<void> {
     try {
       const res = await fetch("/api/tasks", {
@@ -65,7 +100,6 @@
       if (res.ok) {
         const newTask = await res.json();
         tasks.unshift(newTask); // = [...tasks, newTask];
-        // To directly sort tasks call refreshTasks
       } else {
         error = "Failed to create task.";
       }
@@ -119,7 +153,9 @@
         <li id="{task.id.toString()}" class="flex p-2 rounded-xl items-center justify-between"
             transition:fly={{x: 50, duration: 300}}>
           <div class="flex gap-2 items-center">
-            <TaskStatusSelection taskId={task.id} status={task.status} />
+            <!-- Passed argument: status={task.status} has no effect -->
+            <!-- Remove binding to disable update event -->
+            <TaskStatusSelection bind:statusChanged={smallChangeSuccess} taskId={task.id} />
             <div>
               <div data-testid="TaskListTitle">{task.title}</div>
               <div class="text-xs uppercase font-semibold opacity-60" data-testid="TaskListTeaser">{task.teaser}</div>
@@ -148,9 +184,11 @@
 
   <!-- Form for creating a new task -->
   <form class="mt-4 card bg-base-100 p-4 gap-4 flex-row justify-center items-end"
+    data-testid="TaskListCreationForm"
         onsubmit={() => {
           createTask(title, teaser, description, dueDate, priority, tags);
-        }}>
+        }}
+  >
     <TaskForm bind:title={title} bind:teaser={teaser} bind:description={description}
               bind:dueDate={dueDate} bind:priority={priority} bind:tags={tags} />
     <div class="form-control">

@@ -25,6 +25,13 @@ jobs:
         - name: Install dependencies
           run: npm ci
 
+        - name: Install playwright dependencies
+          run: npx playwright install
+
+        - name: Creating output file
+          run: |
+            mkdir coverage && touch ./coverage/lcov.info
+
         - name: Run tests & generage coverage
           run: npm run coverage
 

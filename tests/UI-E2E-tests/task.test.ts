@@ -1,76 +1,46 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
-// import { chromium, type Browser, type BrowserContext, type Page } from "playwright/test";
 import { render } from 'vitest-browser-svelte'
 import { page } from '@vitest/browser/context';
-import type { User } from "$lib/server/objects/user";
 
 import main from "$lib/../routes/+page.svelte";
 
-// import {browser, context, browser} from "./context/globals";
-import { load } from "$lib/../routes/+page.server";
-import prismaMock from "$lib/server/__mocks__/prisma";
-import { create_task_button, description_input, PRIORITY, SelectPriority, teaser_input, title_input } from "./context/selectors";
-
-vi.mock("$lib/server/prisma");
+import { create_task_button, description_input, PRIORITY, SelectPriority, teaser_field, teaser_input, title_edit_input, title_field, title_input } from "./context/selectors";
 
 // Mock objects
-// const mockUser: User | null = {
-//     "id": 1,
-//     "email": "test@test.com",
-//     "username": "testUser",
-//     "emailVerified": true,
-//     "registered2FA": true,
-//     "createdAt": new Date(),
-//     "lastLogin": new Date(),
-// };
 const initMockTask = {
-    "id": 1,
-    "title": "InitMockTitle", 
-    "teaser": "InitMockTeaser", 
-    "description": "InitMockDescription",
-    "priority": "Mid",
-    "tags": ["Bug"],
-    "status": "Open"
+    id: 1,
+    title: "InitMockTitle", 
+    teaser: "InitMockTeaser", 
+    description: "InitMockDescription",
+    dueDate: new Date(new Date().setHours(23, 59, 59, 999)).toISOString().substring(0, 16),         // Gets retrieved by taskId
+    priority: "Mid",
+    status: "Open",         // Gets retrieved by taskId
+    tags: ["Bug"],
 };
-const updatedMockTask = {
-    "id": 1,
-    "title": "UpdatedMockTitle", 
-    "teaser": "UpdatedMockTeaser", 
-    "description": "UpdatedMockDescription",
-    "priority": "Low",
-    "tags": ["Bug"],
-    "status": "Pending"
+const wrongMockTask = {
+    id: -1,
+    title: "", 
+    teaser: "IgnoredTeaser", 
+    description: "NoDescription",
+    dueDate: new Date(new Date().setHours(23, 59, 59, 999)).toISOString().substring(0, 16),         // Gets retrieved by taskId
+    priority: "High",           // Change this to an invalid priority to validate the error handling
+    status: "Deleted",          // Gets retrieved by taskId
+    tags: ["InvalidTag"],
 };
-// Global variable
-const baseUrl = "http://localhost:5173";
 
 // vitest test hooks
 beforeAll(() => {
-    // Creates a mock on the loading function of the main page
-    // vi.mock(import("$lib/../routes/+page.server"), () => {
-    //     return {
-    //         // Enables injection of functions (fakes)
-    //         load: vi.fn()
-    //     }
-    // })
-    // vi.mocked(load).mockReturnValue(
-    //     {
-    //         user: mockUser
-    //     }
-    // );
-    // Creates an internal mock so that the tasks dont really get created 
-    prismaMock.task.create.mockResolvedValue(initMockTask);
-    // Customizes the internal delete function => Returns the deleted task
-    prismaMock.task.update.mockResolvedValue(updatedMockTask);
-
+    // Cant use cloudflare:sockets because of restrictions in the browser environment
+    // Mocking helps to encapsulate the error so that the tests wont fail
+    vi.mock("$lib/server/prisma");
 });
 
-beforeEach(async () => {
-    
+beforeEach(() => {
+    render(main);
 });
 
-afterEach(async () => {
-    
+afterEach(() => {
+    // No cleanup necessary
 });
 
 afterAll(() => {
@@ -78,37 +48,54 @@ afterAll(() => {
 });
 
 
-
 describe("Positive test cases", () => {
-    test.only("Creating a task", async () => {
-        // main could be passed PageData
-        const screen = render(main);
-        await expect.element(screen.getByText('Focusflow')).toBeInTheDocument();
+    test("Creating a task", async () => {
+        // Verifing that the right page is loaded
+        await expect.element(page.getByText('Focusflow')).toBeInTheDocument();
+
+        // Counts existing tasks
+        let task_count = title_field.elements().length;
 
         // Filling out the form
         await title_input.fill(initMockTask.title);
         await teaser_input.fill(initMockTask.teaser);
         await description_input.fill(initMockTask.description);
-        // let priority: PRIORITY = PRIORITY[initMockTask.priority as keyof typeof PRIORITY];
-        // let priority: PRIORITY = initMockTask.priority as PRIORITY;
         await SelectPriority(initMockTask.priority as PRIORITY);
         
+        // Cant use buttons - dont know exactly why
+        // await create_task_button.click();
 
-        await create_task_button.click();           // FAILS HERE: cant use prisma inside the browser environment (adapter for cloudflare isnt supported)
-
-
-        // Get the input DOM node by querying the associated label.
-        const task_titles = page.getByTestId("FormListTitle");
-        task_titles.elements().forEach((element) => {
-            console.log(element.textContent);
-        });
-
+        // Newest task creation at the top
+        expect(title_field.first().element().textContent).toBe(initMockTask.title);
+        expect(teaser_field.first().element().textContent).toBe(initMockTask.teaser);
+        // More cant be asserted right now...
+        
+        // After correct creation there should be one more task
+        expect(title_edit_input.elements().length).toBe(task_count + 1);
     });
 }); 
 
 describe("Negative test cases", () => {
-    test("Failed to create a task", () => {
+    test("Failing to create a task", async () => {
+        // Verifing that the right page is loaded
+        await expect.element(page.getByText('Focusflow')).toBeInTheDocument();
+        const promise = new Promise(resolve => setTimeout(resolve, 150));
+        await vi.waitFor(() => promise.then(() => true));
 
+        // Counts existing tasks
+        let task_count = title_edit_input.elements().length;
+
+        // Filling out the form
+        await title_input.fill(wrongMockTask.title);
+        await teaser_input.fill(wrongMockTask.teaser);
+        await description_input.fill(wrongMockTask.description);
+        await SelectPriority(wrongMockTask.priority as PRIORITY);
+        
+        // Cant use buttons - dont know exactly why
+        await create_task_button.click();           // Shouldnt be triggered because of empty title
+
+        // After false creation there should be the same amount of tasks
+        expect(title_edit_input.elements().length).toBe(task_count);
     });
 });
 

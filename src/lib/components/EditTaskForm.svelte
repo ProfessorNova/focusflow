@@ -9,6 +9,7 @@
   $effect(() => {
     if (props.checkSavings == true) {
       // Handle event when modal closes
+      // updateSuccess = false;
       LoadTaskData();
     }
   });
@@ -38,14 +39,13 @@
   }
 
   // Load the task data on mount
-  onMount(() => {
-    LoadTaskData();
+  onMount(async () => {
+    await LoadTaskData();
   });
 
   // Update the task via PUT request
   async function updateTask(): Promise<void> {
     try {
-      console.log(priority);
       const res = await fetch(`/api/tasks/${taskId}`, {
         method: "PUT",
         headers: {
@@ -55,6 +55,7 @@
       });
       if (res.ok) {
         updateSuccess = true;
+        // Timeout for the banner to show the message
         setTimeout(() => {
           updateSuccess = false;
         }, 5000);
@@ -70,7 +71,9 @@
 <!-- Update Task Form -->
 <form onsubmit={updateTask} class="container mx-auto">
   <div class="card md:card-side bg-base-100">
-    <div class="card-body">
+    <div class="card-body"
+      data-testid="EditTaskForm"
+    >
       <TaskForm bind:title={title} bind:teaser={teaser} bind:description={description}
                 bind:dueDate={dueDate} bind:priority={priority} bind:tags={tags} />
       <div class="form-control flex justify-end">

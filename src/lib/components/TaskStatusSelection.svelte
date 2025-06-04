@@ -2,30 +2,29 @@
   import { onMount } from "svelte";
   import { Circle, CircleCheck, CircleDot, Target } from "lucide-svelte";
 
-  let { statusChanged = $bindable(), ...props } = $props();
+  let { statusChanged = $bindable(false), ...props } = $props();
+  let statusChangedVisibility: boolean = $state(false);
 
   let taskId: number = props.taskId;
   let status: string = $state("");
   let oldStatus: string = $state("");
 
-  onMount(() => {
-    (async () => {
-      try {
-        const res = await fetch(`/api/tasks/${taskId}`);
-        const task = await res.json();
-        status = task.status;
-        oldStatus = status;
-      } catch (err) {
-        console.error("Failed to load task.");
-      }
-    })();
+  onMount(async () => {
+    try {
+      const res = await fetch(`/api/tasks/${taskId}`);
+      const task = await res.json();
+      status = task.status;
+      oldStatus = status;
+    } catch (err) {
+      console.error("Failed to load task.");
+    }
   });
 
   async function updateTask(): Promise<void> {
     if(oldStatus == status) {
       return;
     } else {
-      statusChanged = true;
+      statusChangedVisibility = true;
       oldStatus = status;
     }
     try {
@@ -37,7 +36,11 @@
         body: JSON.stringify({ status })
       });
       if (res.ok) {
-        statusChanged = false;
+        statusChanged = true;
+        setTimeout(() => {
+          statusChanged = false;
+          statusChangedVisibility = false;
+        }, 200);
       } else {
         console.error("Failed to update task.");
       }
@@ -62,7 +65,7 @@
     {/if}
   </div>
   <ul id="TaskStatusList"
-    class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm {statusChanged ? `hidden` : ``}"
+    class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm {statusChangedVisibility ? `hidden` : ``}"
     data-testid="TaskStatusSelection"
   >
     <li>

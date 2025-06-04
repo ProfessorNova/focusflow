@@ -8,6 +8,7 @@ export default defineWorkspace([
     test: {
       name: "ui",
       css: true,
+      globals: true,
 
       include: [
         'tests/UI-E2E-tests/**/*.{spec,test}.ts',
@@ -15,7 +16,7 @@ export default defineWorkspace([
       setupFiles: ['tests/setup.ts'],
       browser: {
         enabled: true,
-        // headless: true,
+        headless: true,
         provider: 'playwright',
         // https://vitest.dev/guide/browser/playwright
         instances: [
