@@ -31,10 +31,7 @@ jobs:
         - name: Run tests & generate coverage
           run: npm run coverage
 
-        - name: List coverage output
-          run: ls -R coverage
-
         - name: Upload to Coveralls
           uses: coverallsapp/github-action@v2
           with:
-            file: lcov.info
+            file: coverage/lcov.info

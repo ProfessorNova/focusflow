@@ -10,7 +10,7 @@ export default defineConfig({
     testTimeout: 30000,
 
     coverage: {
-      provider: "istanbul",          
+      provider: "v8",          
       reporter: ["text", "json", "html", "lcov"],
       include: ["src/**/*.{js,ts,svelte}"],
       exclude: ["node_modules/", "tests/"],
