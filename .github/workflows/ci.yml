@@ -37,4 +37,4 @@ jobs:
         - name: Upload to Coveralls
           uses: coverallsapp/github-action@v2
           with:
-            file: coverage/lcov.info
+            file: lcov.info
