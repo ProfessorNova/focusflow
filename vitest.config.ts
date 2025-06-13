@@ -60,11 +60,11 @@ export default defineConfig({
             },
         ],
         coverage: {
-      provider: "v8",          
-      reporter: ["lcov", "html", "clover", "json"],
-      include: ["src/**/*.{js,ts,svelte}"],
-      exclude: ["node_modules/", "tests/"],
-      all: true,
-    },
+            provider: "v8",
+            reporter: ["lcov", "html", "clover", "json"],
+            include: ["src/**/*.{js,ts,svelte}"],
+            exclude: ["node_modules/", "tests/"],
+            all: true,
+        },
     },
 });
