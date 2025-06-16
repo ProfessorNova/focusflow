@@ -146,7 +146,7 @@ Read out the section in the presentation.
 - **Is the system deployed somewhere (e.g., bwCloud, Vercel, Heroku, etc.)?**
     - ***Can other students or instructors access / try it?***
 
-Yes, it is deployed on bwCloud and can be accessed by anyone with the link.
+Yes, it is deployed on bwCloud and can be accessed by anyone with the link but there is no email client. Which effectivly disables the creation of new accounts.
 
 - **Mention how unit, integration, API or other tests were integrated.**
 
